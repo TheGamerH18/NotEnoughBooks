@@ -2,9 +2,9 @@
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
-        <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <UserSecretsId>aspnet-NotEnoughBooks-d3ca8783-f99e-4728-8b0b-0fb9a0f82dc4</UserSecretsId>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
     <ItemGroup>
@@ -12,12 +12,14 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.21"/>
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.21"/>
-        <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.21"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.21"/>
+        <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.21" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.21" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.22" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.21"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.21" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.22" />
         <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
     </ItemGroup>
 

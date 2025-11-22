@@ -12,13 +12,11 @@ public class Book
     
     public string Author { get; set; }
     
-    public string Description { get; set; }
-    
     public double Price { get; set; }
     
     public string ImagePath { get; set; }
     
-    public DateOnly PublishedDate { get; set; }
+    public string PublishedYear { get; set; }
     
     public DateTime AddedOn { get; set; }
     
