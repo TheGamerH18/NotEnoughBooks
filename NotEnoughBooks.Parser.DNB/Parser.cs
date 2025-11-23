@@ -8,6 +8,8 @@ namespace NotEnoughBooks.Parser.DNB;
 public partial class Parser : IGetBookByIsbnPort
 {
     private const string BASE_URL = "https://portal.dnb.de/opac.htm?method=simpleSearch&query=";
+    private const string COVER_URL = "https://portal.dnb.de/opac/mvb/cover?isbn=";
+
     private readonly HttpClient _httpClient = new HttpClient();
 
     public async Task<BookResult> GetByIsbn(string isbn)
@@ -36,6 +38,7 @@ public partial class Parser : IGetBookByIsbnPort
             Id = Guid.NewGuid(),
             Isbn = isbn,
             AddedOn = DateTime.Now,
+            ImagePath = COVER_URL + isbn,
         };
 
         foreach (HtmlNode htmlTableRow in htmlTable)
@@ -45,7 +48,7 @@ public partial class Parser : IGetBookByIsbnPort
             // ITS A LIE
             if (string.IsNullOrEmpty(firstCell?.InnerText.Trim()))
                 continue;
-                
+            
             HtmlNode secondCell = htmlTableRow.SelectSingleNode("td[2]");
             switch (firstCell.InnerText.Trim())
             {
@@ -65,7 +68,6 @@ public partial class Parser : IGetBookByIsbnPort
                     break;
             }
         }
-
         return result;
     }
 
