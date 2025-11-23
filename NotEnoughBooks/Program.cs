@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using NotEnoughBooks.Core;
 using NotEnoughBooks.Data;
+using NotEnoughBooks.Parser.DNB;
 
 namespace NotEnoughBooks;
 
@@ -20,6 +22,9 @@ public class Program
             .AddEntityFrameworkStores<ApplicationDbContext>();
         builder.Services.AddControllersWithViews();
 
+        builder.Services.AddCore();
+        builder.Services.AddDnbParser();
+ 
         WebApplication app = builder.Build();
 
         // Configure the HTTP request pipeline.

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace NotEnoughBooks.Data.Models;
+namespace NotEnoughBooks.Core.Models;
 
 public class Book
 {

@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotEnoughBooks", "NotEnough
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotEnoughBooks.Parser.DNB", "NotEnoughBooks.Parser.DNB\NotEnoughBooks.Parser.DNB.csproj", "{909E0B13-066F-4120-96DC-106E1E94F691}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotEnoughBooks.Core", "NotEnoughBooks.Core\NotEnoughBooks.Core.csproj", "{503888EE-E833-4F9C-A797-1625E0BA8F67}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{909E0B13-066F-4120-96DC-106E1E94F691}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{909E0B13-066F-4120-96DC-106E1E94F691}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{909E0B13-066F-4120-96DC-106E1E94F691}.Release|Any CPU.Build.0 = Release|Any CPU
+		{503888EE-E833-4F9C-A797-1625E0BA8F67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{503888EE-E833-4F9C-A797-1625E0BA8F67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{503888EE-E833-4F9C-A797-1625E0BA8F67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{503888EE-E833-4F9C-A797-1625E0BA8F67}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

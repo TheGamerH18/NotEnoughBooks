@@ -1,19 +1,19 @@
 using System.Diagnostics;
+using ConstructorGenerator.Attributes;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using NotEnoughBooks.Data.Models;
+using NotEnoughBooks.Core.Models;
+using NotEnoughBooks.Core.UseCases.Interfaces;
 using NotEnoughBooks.Models;
 
 namespace NotEnoughBooks.Controllers;
 
-public class HomeController : Controller
+[GenerateFullConstructor]
+public partial class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
-
-    public HomeController(ILogger<HomeController> logger)
-    {
-        _logger = logger;
-    }
+    private readonly IRequestBookUseCase _requestBookUseCase;
 
     public IActionResult Index()
     {
@@ -28,9 +28,20 @@ public class HomeController : Controller
     [Authorize]
     public async Task<IActionResult> AddBook()
     {
-        Parser parser = new Parser();
-        Book book = await parser.Parse("978-3-7539-1693-4");
-        return Ok(book);
+        try
+        {
+            BookResult result = await _requestBookUseCase.Execute("978-3-7539-1693-4");
+            
+            if (result.Success)
+                return Ok(result.Book);
+            
+            return BadRequest(result.Message);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "An error occured");
+            return StatusCode(500);
+        }
     }
     
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
