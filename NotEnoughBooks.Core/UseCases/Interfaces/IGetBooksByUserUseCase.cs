@@ -3,7 +3,7 @@ using NotEnoughBooks.Core.Models;
 
 namespace NotEnoughBooks.Core.UseCases.Interfaces;
 
-public interface IRequestBookUseCase
+public interface IGetBooksByUserUseCase
 {
-    Task<BookResult> Execute(string query);
+    public IEnumerable<Book> Execute(IdentityUser user);
 }

@@ -1,9 +1,6 @@
 using System.Diagnostics;
 using ConstructorGenerator.Attributes;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using NotEnoughBooks.Core.Models;
 using NotEnoughBooks.Core.UseCases.Interfaces;
 using NotEnoughBooks.Models;
 
@@ -23,25 +20,6 @@ public partial class HomeController : Controller
     public IActionResult Privacy()
     {
         return View();
-    }
-
-    [Authorize]
-    public async Task<IActionResult> AddBook()
-    {
-        try
-        {
-            BookResult result = await _requestBookUseCase.Execute("978-3-7539-1693-4");
-            
-            if (result.Success)
-                return Ok(result.Book);
-            
-            return BadRequest(result.Message);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "An error occured");
-            return StatusCode(500);
-        }
     }
     
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

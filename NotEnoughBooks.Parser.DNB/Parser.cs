@@ -5,16 +5,16 @@ using NotEnoughBooks.Core.Ports;
 
 namespace NotEnoughBooks.Parser.DNB;
 
-public partial class Parser : IGetBookByIsbnPort
+public partial class Parser : IGetBookByQueryPort
 {
     private const string BASE_URL = "https://portal.dnb.de/opac.htm?method=simpleSearch&query=";
     private const string COVER_URL = "https://portal.dnb.de/opac/mvb/cover?isbn=";
 
     private readonly HttpClient _httpClient = new HttpClient();
 
-    public async Task<BookResult> GetByIsbn(string isbn)
+    public async Task<BookResult> GetBook(string query)
     {
-        HttpResponseMessage httpResponseMessage = await _httpClient.GetAsync(BASE_URL + isbn);
+        HttpResponseMessage httpResponseMessage = await _httpClient.GetAsync(BASE_URL + query);
         if (!httpResponseMessage.IsSuccessStatusCode) throw new HttpRequestException(httpResponseMessage.ReasonPhrase);
         
         HtmlDocument document = new HtmlDocument();
@@ -27,7 +27,7 @@ public partial class Parser : IGetBookByIsbnPort
         if (htmlTable == null)
             return BookResult.Create("Book not found");
         
-        Book result = ParseBookFromTable(isbn, htmlTable);
+        Book result = ParseBookFromTable(query, htmlTable);
         return BookResult.Create(result);
     }
 

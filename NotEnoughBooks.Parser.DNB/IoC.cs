@@ -7,7 +7,7 @@ public static class IoC
 {
     public static IServiceCollection AddDnbParser(this IServiceCollection services)
     {
-        services.AddScoped<IGetBookByIsbnPort, Parser>();
+        services.AddScoped<IGetBookByQueryPort, Parser>();
         return services;
     }
 }

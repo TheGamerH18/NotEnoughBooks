@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using NotEnoughBooks.Adapters;
 using NotEnoughBooks.Core;
+using NotEnoughBooks.Core.Ports;
 using NotEnoughBooks.Data;
 using NotEnoughBooks.Parser.DNB;
 
@@ -22,6 +24,9 @@ public class Program
             .AddEntityFrameworkStores<ApplicationDbContext>();
         builder.Services.AddControllersWithViews();
 
+        builder.Services.AddScoped<ISaveBookPort, SaveBookAdapter>();
+        builder.Services.AddScoped<IGetBooksByUserPort, GetBooksByUserAdapter>();
+        
         builder.Services.AddCore();
         builder.Services.AddDnbParser();
  

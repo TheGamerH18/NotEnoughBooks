@@ -9,6 +9,8 @@ public static class IoC
     public static IServiceCollection AddCore(this IServiceCollection services)
     {
         services.AddScoped<IRequestBookUseCase, RequestBookUseCase>();
+        services.AddScoped<IGetBooksByUserUseCase, GetBooksByUserUseCase>();
+        services.AddScoped<ISaveBookUseCase, SaveBookUseCase>();
         return services;
     }
 }

@@ -1,0 +1,8 @@
+@model bool
+
+@{
+    ViewData["Title"] = Model ? "Book Saved" : "Book Not Saved";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<a asp-controller="Book" asp-action="Index">Go to list</a>
