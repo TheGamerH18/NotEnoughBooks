@@ -5,5 +5,5 @@ namespace NotEnoughBooks.Core.UseCases.Interfaces;
 
 public interface IRequestBookUseCase
 {
-    Task<BookResult> Execute(string query);
+    Task<BookResult> Execute(string isbn);
 }

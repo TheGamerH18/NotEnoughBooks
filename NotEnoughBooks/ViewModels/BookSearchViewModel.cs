@@ -2,5 +2,5 @@ namespace NotEnoughBooks.ViewModels;
 
 public class BookSearchViewModel
 {
-    public string SearchTerm { get; set; } = string.Empty;
+    public string Isbn { get; set; } = string.Empty;
 }

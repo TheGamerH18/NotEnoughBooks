@@ -10,12 +10,12 @@ namespace NotEnoughBooks.Core.UseCases;
 [GenerateFullConstructor]
 public partial class RequestBookUseCase : IRequestBookUseCase
 {
-    private readonly IGetBookByQueryPort _getBookByQueryPort;
+    private readonly IGetBookByIsbnPort _getBookByIsbnPort;
     private readonly ILogger<RequestBookUseCase> _logger;
     
-    public async Task<BookResult> Execute(string query)
+    public async Task<BookResult> Execute(string isbn)
     {
-        BookResult book = await _getBookByQueryPort.GetBook(query);
+        BookResult book = await _getBookByIsbnPort.GetBook(isbn);
         return book;
     }
 }

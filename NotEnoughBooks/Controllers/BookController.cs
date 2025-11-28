@@ -19,12 +19,12 @@ public partial class BookController : Controller
     private readonly UserManager<IdentityUser> _userManager;
     
     [Authorize]
-    [HttpGet]
-    public IActionResult AddBook()
+    [HttpGet("{isbn?}")]
+    public IActionResult AddBook(string isbn = "")
     {
         try
         {
-            return View();
+            return View(new BookSearchViewModel() { Isbn = isbn });
         }
         catch (Exception e)
         {
@@ -39,7 +39,7 @@ public partial class BookController : Controller
     {
         try
         {
-            BookResult result = await _requestBookUseCase.Execute(query.SearchTerm);
+            BookResult result = await _requestBookUseCase.Execute(query.Isbn);
             
             if (result.Success)
                 return View(result.Book);

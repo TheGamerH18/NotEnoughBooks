@@ -1,3 +1,4 @@
+@using Microsoft.AspNetCore.Http.Extensions
 @model NotEnoughBooks.ViewModels.BookSearchViewModel
 @{
     ViewData["Title"] = "Add Book by ISBN";
@@ -5,10 +6,22 @@
 
 <form asp-action="GetBookInfo" method="post">
     <div class="form-floating mb-3">
-        <input asp-for="SearchTerm" class="form-control" autocomplete="current-password" aria-required="true" />
-        <label asp-for="SearchTerm" class="form-label">Query</label>
+        <input asp-for="Isbn" id="isbnInput" class="form-control" autocomplete="current-password" aria-required="true" />
+        <label asp-for="Isbn" class="form-label">Query</label>
     </div>
     <div>
         <button id="submit" type="submit" class="w-100 btn btn-lg btn-primary">Submit</button>
     </div>
 </form>
+
+<button class="mt-2 btn btn-lg btn-secondary" onclick="OpenBinaryEye()">Open BinaryEye</button>
+
+@section Scripts
+{
+    <script>
+        function OpenBinaryEye(){
+            window.open("binaryeye://scan?ret=@Context.Request.Scheme://@Context.Request.Host/Book/AddBook/{RESULT}")
+            window.close();
+        }
+    </script>
+}

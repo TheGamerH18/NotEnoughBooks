@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotEnoughBooks", "NotEnoughBooks\NotEnoughBooks.csproj", "{0B3D0464-2C99-49BA-814B-3D48A3143DF7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotEnoughBooks.Parser.DNB", "NotEnoughBooks.Parser.DNB\NotEnoughBooks.Parser.DNB.csproj", "{909E0B13-066F-4120-96DC-106E1E94F691}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotEnoughBooks.ParserAdapter", "NotEnoughBooks.ParserAdapter\NotEnoughBooks.ParserAdapter.csproj", "{909E0B13-066F-4120-96DC-106E1E94F691}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotEnoughBooks.Core", "NotEnoughBooks.Core\NotEnoughBooks.Core.csproj", "{503888EE-E833-4F9C-A797-1625E0BA8F67}"
 EndProject

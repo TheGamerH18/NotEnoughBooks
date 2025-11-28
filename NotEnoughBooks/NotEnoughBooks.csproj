@@ -30,7 +30,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\NotEnoughBooks.Core\NotEnoughBooks.Core.csproj" />
-      <ProjectReference Include="..\NotEnoughBooks.Parser.DNB\NotEnoughBooks.Parser.DNB.csproj" />
+      <ProjectReference Include="..\NotEnoughBooks.ParserAdapter\NotEnoughBooks.ParserAdapter.csproj" />
     </ItemGroup>
 
 </Project>
