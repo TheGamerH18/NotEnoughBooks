@@ -10,14 +10,18 @@ namespace NotEnoughBooks.Core.UseCases;
 public partial class SaveBookUseCase : ISaveBookUseCase
 {
     private readonly ISaveBookPort _saveBookPort;
+    private readonly ICacheThumbnailPort _cacheThumbnailPort;
     
-    public bool Execute(Book book, IdentityUser user)
+    public async Task<bool> Execute(Book book, IdentityUser user)
     {
         try
         {
+            book.Id = Guid.NewGuid();
             book.OwnedBy = user;
             book.AddedOn = DateTime.Now;
-            _saveBookPort.SaveBook(book);
+            book.ImagePath = await _cacheThumbnailPort.SaveThumbnail(book.ImagePath, book.Id);
+            await _saveBookPort.SaveBook(book);
+            
             return true;
         }
         catch

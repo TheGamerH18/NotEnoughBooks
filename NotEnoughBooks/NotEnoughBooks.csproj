@@ -33,4 +33,8 @@
       <ProjectReference Include="..\NotEnoughBooks.ParserAdapter\NotEnoughBooks.ParserAdapter.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="wwwroot\thumbnails\" />
+    </ItemGroup>
+
 </Project>

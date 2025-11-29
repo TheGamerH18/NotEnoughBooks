@@ -23,9 +23,12 @@ public class Program
         builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
             .AddEntityFrameworkStores<ApplicationDbContext>();
         builder.Services.AddControllersWithViews();
+        
+        builder.Services.AddHttpClient();
 
         builder.Services.AddScoped<ISaveBookPort, SaveBookAdapter>();
         builder.Services.AddScoped<IGetBooksByUserPort, GetBooksByUserAdapter>();
+        builder.Services.AddScoped<ICacheThumbnailPort, CacheThumbnailAdapter>();
         
         builder.Services.AddCore();
         builder.Services.AddDnbParser();

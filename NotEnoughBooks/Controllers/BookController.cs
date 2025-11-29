@@ -60,7 +60,7 @@ public partial class BookController : Controller
         try
         {
             IdentityUser requestingUser = await GetRequestingUser();
-            return View(_saveBookUseCase.Execute(book, requestingUser));
+            return View(await _saveBookUseCase.Execute(book, requestingUser));
         }
         catch (Exception e)
         {

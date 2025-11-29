@@ -1,18 +1,20 @@
 using System.Net.Http.Json;
 using System.Text.RegularExpressions;
+using ConstructorGenerator.Attributes;
 using HtmlAgilityPack;
 using NotEnoughBooks.Core.Models;
 using NotEnoughBooks.Core.Ports;
 
 namespace NotEnoughBooks.Parser.DNB;
 
+[GenerateFullConstructor]
 public partial class GetBookByIsbnAdapter : IGetBookByIsbnPort
 {
     private const string DNB_URL = "https://portal.dnb.de/opac.htm?method=simpleSearch&query=";
     private const string GOOGLE_BOOKS_URL = "https://www.googleapis.com/books/v1/volumes?q=isbn:";
     private const string DNB_COVER_URL = "https://portal.dnb.de/opac/mvb/cover?isbn=";
 
-    private readonly HttpClient _httpClient = new HttpClient();
+    private readonly HttpClient _httpClient;
 
     public async Task<BookResult> GetBook(string isbn)
     {
@@ -47,7 +49,7 @@ public partial class GetBookByIsbnAdapter : IGetBookByIsbnPort
             Author = string.Join(", ", responseObjectItem.Authors),
             PublishedYear = responseObjectItem.PublishedDate.Year.ToString()
         };
-        result.ImagePath = responseObjectItem.ImageLinks?.Thumbnail ?? result.Isbn;
+        result.ImagePath = responseObjectItem.ImageLinks?.Thumbnail ?? DNB_COVER_URL+result.Isbn;
         
         return BookResult.Create(result);
     }

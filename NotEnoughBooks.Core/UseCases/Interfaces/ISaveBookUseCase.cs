@@ -5,5 +5,5 @@ namespace NotEnoughBooks.Core.UseCases.Interfaces;
 
 public interface ISaveBookUseCase
 {
-    bool Execute(Book book, IdentityUser user);
+    Task<bool> Execute(Book book, IdentityUser user);
 }
