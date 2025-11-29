@@ -91,10 +91,8 @@ public partial class GetBookByIsbnAdapter : IGetBookByIsbnPort
 
     [GeneratedRegex(@"((\d{1,})\.\d\d \(\w\w\))")]
     private static partial Regex PriceRegex();
-
-    [GeneratedRegex(@"(\d{4})")]
-    private static partial Regex ReleaseYear();
-
+    
+    // ReSharper disable UnusedAutoPropertyAccessor.Local
     private class GoogleBooksResult
     {
         public int TotalItems { get; set; }
@@ -112,7 +110,6 @@ public partial class GetBookByIsbnAdapter : IGetBookByIsbnPort
         public string Subtitle { get; set; }
         public string[] Authors { get; set; }
         public DateOnly PublishedDate { get; set; }
-        public string Description { get; set; }
         public GoogleIndustryIdentifier[] IndustryIdentifiers { get; set; }
         public GoogleImageLinks ImageLinks { get; set; }
     }
@@ -125,7 +122,7 @@ public partial class GetBookByIsbnAdapter : IGetBookByIsbnPort
 
     private class GoogleImageLinks
     {
-        public string SmallThumbnail { get; set; }
         public string Thumbnail { get; set; }
     }
+    // ReSharper restore UnusedAutoPropertyAccessor.Local
 }

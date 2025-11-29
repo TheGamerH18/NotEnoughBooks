@@ -1,17 +1,13 @@
 using System.Diagnostics;
 using ConstructorGenerator.Attributes;
 using Microsoft.AspNetCore.Mvc;
-using NotEnoughBooks.Core.UseCases.Interfaces;
-using NotEnoughBooks.Models;
+using NotEnoughBooks.ViewModels;
 
 namespace NotEnoughBooks.Controllers;
 
 [GenerateFullConstructor]
 public partial class HomeController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
-    private readonly IRequestBookUseCase _requestBookUseCase;
-
     public IActionResult Index()
     {
         return View();
