@@ -45,9 +45,13 @@ public partial class GetBookByIsbnAdapter : IGetBookByIsbnPort
         Book result = new Book()
         {
             Isbn = responseObjectItem.IndustryIdentifiers.First(x => x.Type == "ISBN_13").Identifier,
-            Title = $"{responseObjectItem.Title} {responseObjectItem.Subtitle}",
-            Author = string.Join(", ", responseObjectItem.Authors),
-            PublishedYear = responseObjectItem.PublishedDate.Year.ToString()
+            Title = responseObjectItem.Title,
+            Authors = string.Join(", ", responseObjectItem.Authors),
+            Published = responseObjectItem.PublishedDate,
+            Description = responseObjectItem.Description,
+            PageCount = responseObjectItem.PageCount,
+            Subtitle = responseObjectItem.Subtitle,
+            Publisher = responseObjectItem.Publisher
         };
         result.ImagePath = responseObjectItem.ImageLinks?.Thumbnail ?? DNB_COVER_URL+result.Isbn;
         
@@ -108,6 +112,9 @@ public partial class GetBookByIsbnAdapter : IGetBookByIsbnPort
     {
         public string Title { get; set; }
         public string Subtitle { get; set; }
+        public string Description { get; set; }
+        public string Publisher { get; set; }
+        public int PageCount { get; set; }
         public string[] Authors { get; set; }
         public DateOnly PublishedDate { get; set; }
         public GoogleIndustryIdentifier[] IndustryIdentifiers { get; set; }
