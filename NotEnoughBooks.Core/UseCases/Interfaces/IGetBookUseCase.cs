@@ -3,7 +3,7 @@ using NotEnoughBooks.Core.Models;
 
 namespace NotEnoughBooks.Core.UseCases.Interfaces;
 
-public interface ISaveBookUseCase
+public interface IGetBookUseCase
 {
-    Task<bool> Execute(Book newBook, IdentityUser user);
+    Task<BookResult> Execute(Guid bookId, IdentityUser user);
 }

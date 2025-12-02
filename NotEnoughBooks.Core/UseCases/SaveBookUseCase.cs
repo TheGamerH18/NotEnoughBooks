@@ -11,17 +11,37 @@ public partial class SaveBookUseCase : ISaveBookUseCase
 {
     private readonly ISaveBookPort _saveBookPort;
     private readonly ICacheThumbnailPort _cacheThumbnailPort;
-    
-    public async Task<bool> Execute(Book book, IdentityUser user)
+    private readonly IGetBookByIdPort _getBookByIdPort;
+
+    public async Task<bool> Execute(Book newBook, IdentityUser user)
     {
         try
         {
-            book.Id = Guid.NewGuid();
-            book.OwnedBy = user;
-            book.AddedOn = DateTime.Now;
-            book.ImagePath = await _cacheThumbnailPort.SaveThumbnail(book.ImagePath, book.Id);
-            await _saveBookPort.SaveBook(book);
-            
+            newBook.OwnedBy = user;
+            newBook.AddedOn = DateTime.Now;
+            // Book is not in DB so fill in the model
+            if (newBook.Id == Guid.Empty)
+            {
+                newBook.Id = Guid.NewGuid();
+                newBook.ImagePath = await _cacheThumbnailPort.SaveThumbnail(newBook.ImagePath, newBook.Id);
+            }
+            else
+            {
+                Book oldBook = await _getBookByIdPort.GetBookById(newBook.Id);
+                if (oldBook == null || oldBook.OwnedBy != user)
+                    return false;
+
+                newBook.AddedOn = DateTime.Now;
+                // Image changed, delete old one and download new
+                if (newBook.ImagePath != oldBook.ImagePath)
+                {
+                    await _cacheThumbnailPort.DeleteThumbnail(oldBook.ImagePath.Split("/").Last());
+                    newBook.ImagePath = await _cacheThumbnailPort.SaveThumbnail(newBook.ImagePath, newBook.Id);
+                }
+            }
+
+            await _saveBookPort.SaveBook(newBook);
+
             return true;
         }
         catch

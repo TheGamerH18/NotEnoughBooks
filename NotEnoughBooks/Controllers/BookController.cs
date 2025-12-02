@@ -10,15 +10,16 @@ namespace NotEnoughBooks.Controllers;
 
 [GenerateFullConstructor]
 [Route("[controller]/[action]")]
+[Authorize]
 public partial class BookController : Controller
 {
     private readonly ILogger<BookController> _logger;
     private readonly IRequestBookUseCase _requestBookUseCase;
     private readonly ISaveBookUseCase _saveBookUseCase;
     private readonly IGetBooksByUserUseCase _getBooksByUserUseCase;
+    private readonly IGetBookUseCase _getBookUseCase;
     private readonly UserManager<IdentityUser> _userManager;
     
-    [Authorize]
     [HttpGet("{isbn?}")]
     public IActionResult AddBook(string isbn = "")
     {
@@ -33,7 +34,6 @@ public partial class BookController : Controller
         }
     }
     
-    [Authorize]
     [HttpPost]
     public async Task<IActionResult> GetBookInfo(BookSearchViewModel query)
     {
@@ -53,7 +53,6 @@ public partial class BookController : Controller
         }
     }
 
-    [Authorize]
     [HttpPost]
     public async Task<IActionResult> SaveBook(Book book)
     {
@@ -76,6 +75,41 @@ public partial class BookController : Controller
             IdentityUser requestingUser = await GetRequestingUser();
             IEnumerable<Book> books = _getBooksByUserUseCase.Execute(requestingUser);
             return View(books);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "An error occured");
+            return StatusCode(500);
+        }
+    }
+
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> Edit(Guid id)
+    {
+        try
+        {
+            IdentityUser requestingUser = await GetRequestingUser();
+            BookResult bookResult = await _getBookUseCase.Execute(id, requestingUser);
+            return View(bookResult);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "An error occured");
+            return StatusCode(500);
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Edit(Book book)
+    {
+        try
+        {
+            IdentityUser requestingUser = await GetRequestingUser();
+            bool execute = await _saveBookUseCase.Execute(book, requestingUser);
+            if (!execute)
+                return NotFound();
+            
+            return RedirectToAction(nameof(Index));
         }
         catch (Exception e)
         {

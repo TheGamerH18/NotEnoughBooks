@@ -11,6 +11,7 @@ public static class IoC
         services.AddScoped<IRequestBookUseCase, RequestBookUseCase>();
         services.AddScoped<IGetBooksByUserUseCase, GetBooksByUserUseCase>();
         services.AddScoped<ISaveBookUseCase, SaveBookUseCase>();
+        services.AddScoped<IGetBookUseCase, GetBookUseCase>();
         return services;
     }
 }

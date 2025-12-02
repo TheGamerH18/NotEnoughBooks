@@ -42,12 +42,15 @@ public partial class GetBookByIsbnAdapter : IGetBookByIsbnPort
             return BookResult.Create("No Books Found");
         
         GoogleVolumeInfo responseObjectItem = responseObject.Items[0].VolumeInfo;
+        
+        DateOnly publishedDate = responseObjectItem.PublishedDate.Length != 4 ? DateOnly.Parse(responseObjectItem.PublishedDate) : new DateOnly(int.Parse(responseObjectItem.PublishedDate), 1, 1);
+        
         Book result = new Book()
         {
             Isbn = responseObjectItem.IndustryIdentifiers.First(x => x.Type == "ISBN_13").Identifier,
             Title = responseObjectItem.Title,
             Authors = string.Join(", ", responseObjectItem.Authors),
-            Published = responseObjectItem.PublishedDate,
+            Published = publishedDate,
             Description = responseObjectItem.Description,
             PageCount = responseObjectItem.PageCount,
             Subtitle = responseObjectItem.Subtitle,
@@ -116,7 +119,7 @@ public partial class GetBookByIsbnAdapter : IGetBookByIsbnPort
         public string Publisher { get; set; }
         public int PageCount { get; set; }
         public string[] Authors { get; set; }
-        public DateOnly PublishedDate { get; set; }
+        public string PublishedDate { get; set; }
         public GoogleIndustryIdentifier[] IndustryIdentifiers { get; set; }
         public GoogleImageLinks ImageLinks { get; set; }
     }

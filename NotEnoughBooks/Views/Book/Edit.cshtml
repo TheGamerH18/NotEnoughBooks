@@ -1,0 +1,20 @@
+@model NotEnoughBooks.Core.Models.BookResult
+
+@{
+    ViewData["Title"] = "Edit Book";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (!Model.Success)
+{
+    <h4>Book not found</h4>
+    <a asp-controller="Book" asp-action="Index">Go to list</a>
+}
+else
+{
+    <form asp-action="Edit" method="post">
+        @{
+            await Html.RenderPartialAsync("BookForm", Model.Book);
+        }
+    </form>
+}

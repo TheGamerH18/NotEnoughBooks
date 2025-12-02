@@ -43,6 +43,12 @@ public partial class CacheThumbnailAdapter : ICacheThumbnailPort
         }
     }
 
+    public Task DeleteThumbnail(string fileName)
+    {
+        File.Delete(Path.Combine(_environment.WebRootPath, "thumbnails", fileName));
+        return Task.CompletedTask;
+    }
+
     private bool TryGetFileExtension(HttpResponseMessage httpResponseMessage, out string extension)
     {
         string contentType = httpResponseMessage.Content.Headers.ContentType?.MediaType;

@@ -1,0 +1,64 @@
+@model NotEnoughBooks.Core.Models.Book
+
+<div class="d-lg-flex">
+    <div class="flex-fill m-3">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="Id"/>
+        <div class="form-floating mb-3">
+            <input asp-for="Isbn" class="form-control" readonly/>
+            <label asp-for="Isbn" class="control-label">ISBN</label>
+            <span asp-validation-for="Isbn" class="text-danger"></span>
+        </div>
+        <div class="form-floating mb-3">
+            <input asp-for="Title" class="form-control"/>
+            <label asp-for="Title" class="control-label"></label>
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+        <div class="form-floating mb-3">
+            <input asp-for="Subtitle" class="form-control"/>
+            <label asp-for="Subtitle" class="control-label"></label>
+            <span asp-validation-for="Subtitle" class="text-danger"></span>
+        </div>
+        <div class="form-floating mb-3">
+            <input asp-for="Description" class="form-control"/>
+            <label asp-for="Description" class="control-label"></label>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+        <div class="form-floating mb-3">
+            <input asp-for="Authors" class="form-control"/>
+            <label asp-for="Authors" class="control-label"></label>
+            <span asp-validation-for="Authors" class="text-danger"></span>
+        </div>
+        <div class="form-floating mb-3">
+            <input asp-for="Publisher" class="form-control"/>
+            <label asp-for="Publisher" class="control-label"></label>
+            <span asp-validation-for="Publisher" class="text-danger"></span>
+        </div>
+        <div class="form-floating mb-3">
+            <input asp-for="Published" type="date" class="form-control"/>
+            <label asp-for="Published" class="control-label">Published</label>
+            <span asp-validation-for="Published" class="text-danger"></span>
+        </div>
+        <div class="input-group mb-3">
+            <label asp-for="PageCount" class="control-label"></label>
+            <input type="number" data-decimals="0" step="1" asp-for="PageCount" class="form-control"/>
+            <span asp-validation-for="PageCount" class="text-danger"></span>
+        </div>
+        <div class="input-group mb-3">
+            <label asp-for="Price" class="control-label"></label>
+            <input type="number" data-decimals="2" step="0.01" asp-for="Price" class="form-control"/>
+            <span asp-validation-for="Price" class="text-danger"></span>
+        </div>
+        <div class="form-floating mb-3">
+            <input asp-for="ImagePath" class="form-control"/>
+            <label asp-for="ImagePath" class="control-label">Image Url</label>
+            <span asp-validation-for="ImagePath" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="m-3">
+        <img src="@Model.ImagePath" style="max-width: 35rem" alt="Cover" class="rounded w-100"/>
+    </div>
+</div>
+<div class="form-floating">
+    <input type="submit" value="Save" class="w-100 btn btn-lg btn-primary"/>
+</div>

@@ -29,6 +29,7 @@ public class Program
         builder.Services.AddScoped<ISaveBookPort, SaveBookAdapter>();
         builder.Services.AddScoped<IGetBooksByUserPort, GetBooksByUserAdapter>();
         builder.Services.AddScoped<ICacheThumbnailPort, CacheThumbnailAdapter>();
+        builder.Services.AddScoped<IGetBookByIdPort, GetBookByIdAdapter>();
         
         builder.Services.AddCore();
         builder.Services.AddDnbParser();

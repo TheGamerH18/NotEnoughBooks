@@ -16,14 +16,14 @@ public class Book
 
     public string? Authors { get; set; }
     
-    public double Price { get; set; }
+    public string? Publisher { get; set; }
     
     //TODO: Proably use a nice default cover
     public string ImagePath { get; set; } = string.Empty;
     
     public int PageCount { get; set; }
     
-    public string? Publisher { get; set; }
+    public double Price { get; set; }
     
     public DateOnly Published { get; set; }
 
