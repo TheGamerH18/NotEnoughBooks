@@ -8,13 +8,13 @@
 
 <h1 class="ms-2">Index</h1>
 <hr />
-<div class="d-flex">
+<div class="d-flex flex-wrap">
     @foreach (Book book in Model)
     {
-        <a asp-action="Edit" asp-route-id="@book.Id" class="text-decoration-none flex-lg-grow-1" style="width: 15rem">
-            <div class="card m-2">
-                <img src="@book.ImagePath" class="card-img-top" alt="Cover" />
-                <div class="card-body">
+        <a asp-action="Edit" asp-route-id="@book.Id" class="book-card text-decoration-none m-2" style="">
+            <div class="card">
+                <img src="@book.ImagePath" class="card-img-top img-fluid" style="aspect-ratio: 0.7; object-fit: cover" alt="Cover" />
+                <div class="card-body" >
                     <p class="card-text">@book.Title</p>
                 </div>
             </div>

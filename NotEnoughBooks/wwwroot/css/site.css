@@ -20,3 +20,15 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+@media (max-device-width: 30rem) {
+  .book-card {
+    max-width: 30rem;
+    flex: 1 0 auto
+  }
+}
+
+.book-card {
+  width: 15rem;
+  aspect-ratio: 0.54;
+}
