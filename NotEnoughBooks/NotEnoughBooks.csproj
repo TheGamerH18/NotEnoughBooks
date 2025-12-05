@@ -31,7 +31,6 @@
 
     <ItemGroup>
       <Folder Include="Data\Migrations\" />
-      <Folder Include="wwwroot\thumbnails\" />
     </ItemGroup>
 
 </Project>

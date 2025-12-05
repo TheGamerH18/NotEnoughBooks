@@ -7,15 +7,14 @@ namespace NotEnoughBooks.Adapters;
 public partial class CacheThumbnailAdapter : ICacheThumbnailPort
 {
     private readonly HttpClient _httpClient;
-    private readonly IWebHostEnvironment _environment;
     private readonly ILogger<CacheThumbnailAdapter> _logger;
-    
+
+
     public async Task<string> SaveThumbnail(string url, Guid bookId)
     {
         try
         {
-            string folder = Path.Combine(_environment.WebRootPath, "thumbnails");
-            Directory.CreateDirectory(folder);
+            Directory.CreateDirectory(PathProvider.ThumbnailsFolderPath);
             HttpResponseMessage httpResponseMessage = await _httpClient.GetAsync(url);
             if (!httpResponseMessage.IsSuccessStatusCode)
             {
@@ -23,9 +22,9 @@ public partial class CacheThumbnailAdapter : ICacheThumbnailPort
                 return string.Empty;
             }
 
-            if (!TryGetFileExtension(httpResponseMessage, out string extension)) 
+            if (!TryGetFileExtension(httpResponseMessage, out string extension))
                 return string.Empty;
-            string path = Path.Combine(folder, bookId+extension);
+            string path = Path.Combine(PathProvider.ThumbnailsFolderPath, bookId + extension);
 
             await using (Stream streamAsync = await httpResponseMessage.Content.ReadAsStreamAsync())
             {
@@ -34,7 +33,8 @@ public partial class CacheThumbnailAdapter : ICacheThumbnailPort
                     await streamAsync.CopyToAsync(fileStream);
                 }
             }
-            return "/thumbnails/" + bookId+extension;
+
+            return "/thumbnails/" + bookId + extension;
         }
         catch (Exception e)
         {
@@ -45,7 +45,7 @@ public partial class CacheThumbnailAdapter : ICacheThumbnailPort
 
     public Task DeleteThumbnail(string fileName)
     {
-        File.Delete(Path.Combine(_environment.WebRootPath, "thumbnails", fileName));
+        File.Delete(Path.Combine(PathProvider.ThumbnailsFolderPath, fileName));
         return Task.CompletedTask;
     }
 

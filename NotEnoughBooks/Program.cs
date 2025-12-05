@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using NotEnoughBooks.Adapters;
 using NotEnoughBooks.Core;
 using NotEnoughBooks.Core.Ports;
@@ -50,6 +51,18 @@ public class Program
 
         app.UseHttpsRedirection();
         app.UseStaticFiles();
+        Directory.CreateDirectory(PathProvider.ThumbnailsFolderPath);
+        
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            FileProvider = new PhysicalFileProvider(PathProvider.ThumbnailsFolderPath),
+            RequestPath = "/thumbnails"
+        });
+        
+        using (IServiceScope serviceScope = app.Services.CreateScope())
+        {
+            serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>().Database.Migrate();
+        }
 
         app.UseRouting();
 
