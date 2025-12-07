@@ -22,6 +22,7 @@ public class Program
         builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
         builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>();
         builder.Services.AddControllersWithViews();
         
@@ -31,6 +32,7 @@ public class Program
         builder.Services.AddScoped<IGetBooksByUserPort, GetBooksByUserAdapter>();
         builder.Services.AddScoped<ICacheThumbnailPort, CacheThumbnailAdapter>();
         builder.Services.AddScoped<IGetBookByIdPort, GetBookByIdAdapter>();
+        builder.Services.AddSingleton<IAdminConfigurationPort, AdminConfigurationAdapter>();
         
         builder.Services.AddCore();
         builder.Services.AddDnbParser();

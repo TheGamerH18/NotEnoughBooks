@@ -1,0 +1,16 @@
+@model NotEnoughBooks.Core.Models.AdminConfiguration;
+@{
+    Layout = "_Layout";
+}
+
+<h1 class="ms-2">Configuration</h1>
+<hr />
+<form asp-action="Configuration" method="post">
+    <div class="form-check mb-3">
+        <input asp-for="AllowRegistration" class="form-check-input" type="checkbox" />
+        <label asp-for="AllowRegistration" class="form-check-label">AllowRegistration</label>
+    </div>
+    <div>
+        <button id="submit" type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
+    </div>
+</form>

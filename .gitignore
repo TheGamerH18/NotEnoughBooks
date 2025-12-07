@@ -55,3 +55,4 @@ nunit-*.xml
 .idea/
 
 NotEnoughBooks/wwwroot/thumbnails
+NotEnoughBooks/AppData

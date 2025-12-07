@@ -12,6 +12,8 @@ public static class IoC
         services.AddScoped<IGetBooksByUserUseCase, GetBooksByUserUseCase>();
         services.AddScoped<ISaveBookUseCase, SaveBookUseCase>();
         services.AddScoped<IGetBookUseCase, GetBookUseCase>();
+        services.AddScoped<ICheckAdminConfigurationUseCase, CheckAdminConfigurationUseCase>();
+        services.AddScoped<ISetAdminConfigurationUseCase, SetAdminConfigurationUseCase>();
         return services;
     }
 }
