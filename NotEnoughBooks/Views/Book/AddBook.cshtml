@@ -18,8 +18,7 @@
 {
     <script>
         function OpenBinaryEye(){
-            window.open("binaryeye://scan?ret=@Context.Request.Scheme://@Context.Request.Host/Book/AddBook/{RESULT}")
-            window.close();
+            window.open("binaryeye://scan?ret=@Context.Request.Scheme://@Context.Request.Host/Book/GetBookInfo?query={RESULT}")
         }
     </script>
 }
