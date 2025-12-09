@@ -20,12 +20,12 @@ public partial class BookController : Controller
     private readonly IGetBookUseCase _getBookUseCase;
     private readonly UserManager<IdentityUser> _userManager;
     
-    [HttpGet("{isbn?}")]
-    public IActionResult AddBook(string isbn = "")
+    [HttpGet]
+    public IActionResult AddBook()
     {
         try
         {
-            return View(new BookSearchViewModel() { Isbn = isbn });
+            return View();
         }
         catch (Exception e)
         {
@@ -34,12 +34,12 @@ public partial class BookController : Controller
         }
     }
     
-    [HttpPost]
-    public async Task<IActionResult> GetBookInfo(BookSearchViewModel query)
+    [HttpGet]
+    public async Task<IActionResult> GetBookInfo(string query)
     {
         try
         {
-            BookResult result = await _requestBookUseCase.Execute(query.Isbn);
+            BookResult result = await _requestBookUseCase.Execute(query);
             
             if (result.Success)
                 return View(result.Book);

@@ -1,12 +1,11 @@
-@model NotEnoughBooks.ViewModels.BookSearchViewModel
 @{
     ViewData["Title"] = "Add Book by ISBN";
 }
 
-<form asp-action="GetBookInfo" method="post">
+<form asp-action="GetBookInfo" method="get">
     <div class="form-floating mb-3">
-        <input asp-for="Isbn" id="isbnInput" class="form-control" autocomplete="current-password" aria-required="true" />
-        <label asp-for="Isbn" class="form-label">Query</label>
+        <input name="query" id="query" class="form-control" autocomplete="current-password" aria-required="true" />
+        <label for="query" class="form-label">Query</label>
     </div>
     <div>
         <button id="submit" type="submit" class="w-100 btn btn-lg btn-primary">Submit</button>
