@@ -89,7 +89,7 @@ public partial class GetBookByIsbnAdapter : IGetBookByIsbnPort
                 continue;
 
             MatchCollection priceMatches = PriceRegex().Matches(secondCell.InnerText.Trim());
-            string dePrice = priceMatches.First(match => match.Value.Split(' ')[1] == "(DE)").Value.Split(' ')[0];
+            string dePrice = priceMatches.FirstOrDefault(match => match.Value.Split(' ')[1] == "(DE)")?.Value.Split(' ')[0] ?? "0";
             return double.Parse(dePrice);
         }
 
