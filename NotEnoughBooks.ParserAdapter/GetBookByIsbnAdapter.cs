@@ -49,7 +49,7 @@ public partial class GetBookByIsbnAdapter : IGetBookByIsbnPort
         {
             Isbn = responseObjectItem.IndustryIdentifiers.First(x => x.Type == "ISBN_13").Identifier,
             Title = responseObjectItem.Title,
-            Authors = string.Join(", ", responseObjectItem.Authors),
+            Authors = string.Join(", ", responseObjectItem.Authors ?? Array.Empty<string>()),
             Published = publishedDate,
             Description = responseObjectItem.Description,
             PageCount = responseObjectItem.PageCount,
