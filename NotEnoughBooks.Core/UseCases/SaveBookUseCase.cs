@@ -24,6 +24,7 @@ public partial class SaveBookUseCase : ISaveBookUseCase
             {
                 newBook.Id = Guid.NewGuid();
                 newBook.ImagePath = await _cacheThumbnailPort.SaveThumbnail(newBook.ImagePath, newBook.Id);
+                await _saveBookPort.SaveBook(newBook);
             }
             else
             {
@@ -31,17 +32,24 @@ public partial class SaveBookUseCase : ISaveBookUseCase
                 if (oldBook == null || oldBook.OwnedBy != user)
                     return false;
 
-                newBook.AddedOn = DateTime.Now;
                 // Image changed, delete old one and download new
                 if (newBook.ImagePath != oldBook.ImagePath)
                 {
                     await _cacheThumbnailPort.DeleteThumbnail(oldBook.ImagePath.Split("/").Last());
-                    newBook.ImagePath = await _cacheThumbnailPort.SaveThumbnail(newBook.ImagePath, newBook.Id);
+                    oldBook.ImagePath = await _cacheThumbnailPort.SaveThumbnail(newBook.ImagePath, newBook.Id);
                 }
+                oldBook.Authors = newBook.Authors;
+                oldBook.Description = newBook.Description;
+                oldBook.Isbn = newBook.Isbn;
+                oldBook.PageCount = newBook.PageCount;
+                oldBook.Price = newBook.Price;
+                oldBook.Published = newBook.Published;
+                oldBook.Publisher = newBook.Publisher;
+                oldBook.Subtitle = newBook.Subtitle;
+                oldBook.Title = newBook.Title;
+
+                await _saveBookPort.SaveChanges();
             }
-
-            await _saveBookPort.SaveBook(newBook);
-
             return true;
         }
         catch

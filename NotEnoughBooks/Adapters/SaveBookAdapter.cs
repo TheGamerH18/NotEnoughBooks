@@ -15,4 +15,9 @@ public partial class SaveBookAdapter : ISaveBookPort
         await _dbContext.Books.AddAsync(book);
         await _dbContext.SaveChangesAsync();
     }
+
+    public async Task SaveChanges()
+    {
+        await _dbContext.SaveChangesAsync();
+    }
 }
