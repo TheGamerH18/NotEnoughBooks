@@ -32,6 +32,7 @@ public class Program
         builder.Services.AddScoped<IGetBooksByUserPort, GetBooksByUserAdapter>();
         builder.Services.AddScoped<ICacheThumbnailPort, CacheThumbnailAdapter>();
         builder.Services.AddScoped<IGetBookByIdPort, GetBookByIdAdapter>();
+        builder.Services.AddScoped<ISearchBooksPort, SearchBooksAdapter>();
         builder.Services.AddSingleton<IAdminConfigurationPort, AdminConfigurationAdapter>();
         
         builder.Services.AddCore();

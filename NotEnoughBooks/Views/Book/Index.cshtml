@@ -1,15 +1,20 @@
 @using NotEnoughBooks.Core.Models
-@model IEnumerable<NotEnoughBooks.Core.Models.Book>
+@model NotEnoughBooks.ViewModels.IndexBookViewModel
 
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
-<h1 class="ms-2">Index</h1>
+<div class="d-flex flex-wrap">
+    <h1 class="mx-2 flex-fill">Index</h1>
+    <form class="form-floating" style="min-width: 30rem" asp-action="Search" method="get">
+        <input name="query" class="form-control" id="queryInput" placeholder="Search" value="@Model.SearchText" />
+        <label for="queryInput" class="form-label">Search</label>
+    </form>
+</div>
 <hr />
 <div class="d-flex flex-wrap">
-    @foreach (Book book in Model)
+    @foreach (Book book in Model.Books)
     {
         <a asp-action="Edit" asp-route-id="@book.Id" class="book-card text-decoration-none m-2" style="">
             <div class="card">

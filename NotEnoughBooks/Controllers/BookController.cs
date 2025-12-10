@@ -18,6 +18,7 @@ public partial class BookController : Controller
     private readonly ISaveBookUseCase _saveBookUseCase;
     private readonly IGetBooksByUserUseCase _getBooksByUserUseCase;
     private readonly IGetBookUseCase _getBookUseCase;
+    private readonly ISearchUseCase _searchUseCase;
     private readonly UserManager<IdentityUser> _userManager;
     
     [HttpGet]
@@ -74,7 +75,7 @@ public partial class BookController : Controller
         {
             IdentityUser requestingUser = await GetRequestingUser();
             IEnumerable<Book> books = _getBooksByUserUseCase.Execute(requestingUser);
-            return View(books);
+            return View(IndexBookViewModel.Create(string.Empty, books));
         }
         catch (Exception e)
         {
@@ -110,6 +111,24 @@ public partial class BookController : Controller
                 return NotFound();
             
             return RedirectToAction(nameof(Index));
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "An error occured");
+            return StatusCode(500);
+        }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Search(string query)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(query))
+                return RedirectToAction(nameof(Index));
+            IdentityUser requestingUser = await GetRequestingUser();
+            IEnumerable<Book> searchResult = _searchUseCase.Execute(query, requestingUser);
+            return View("Index", IndexBookViewModel.Create(query, searchResult));
         }
         catch (Exception e)
         {
