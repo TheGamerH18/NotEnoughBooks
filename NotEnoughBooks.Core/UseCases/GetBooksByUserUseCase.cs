@@ -11,8 +11,10 @@ public partial class GetBooksByUserUseCase : IGetBooksByUserUseCase
 {
     private readonly IGetBooksByUserPort _getBooksByUserPort;
     
-    public IEnumerable<Book> Execute(IdentityUser user)
+    public IEnumerable<Book> Execute(OrderBooksBy orderBooksBy, bool orderAsc, IdentityUser user)
     {
-        return _getBooksByUserPort.GetBooks(user);
+        IEnumerable<Book> books = _getBooksByUserPort.GetBooks(user);
+        books = books.OrderBooksBy(orderBooksBy, orderAsc);
+        return books;
     }
 }

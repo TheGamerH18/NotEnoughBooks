@@ -5,5 +5,5 @@ namespace NotEnoughBooks.Core.UseCases.Interfaces;
 
 public interface IGetBooksByUserUseCase
 {
-    public IEnumerable<Book> Execute(IdentityUser user);
+    public IEnumerable<Book> Execute(OrderBooksBy orderBooksBy, bool orderAsc, IdentityUser user);
 }

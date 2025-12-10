@@ -8,21 +8,64 @@
 <div class="d-flex flex-wrap">
     <h1 class="mx-2 flex-fill">Index</h1>
     <form class="form-floating" style="min-width: 30rem" asp-action="Search" method="get">
-        <input name="query" class="form-control" id="queryInput" placeholder="Search" value="@Model.SearchText" />
-        <label for="queryInput" class="form-label">Search</label>
+        <input hidden asp-for="OrderAsc"/>
+        <input hidden asp-for="Order"/>
+        <input asp-for="SearchText" class="form-control" id="queryInput" placeholder="Search"
+               value="@Model.SearchText"/>
+        <label asp-for="SearchText" class="form-label">Search</label>
+        <input type="submit" hidden/>
     </form>
 </div>
-<hr />
+
+<form>
+    <input hidden asp-for="SearchText"/>
+    <select auto-submit asp-for="Order" asp-items="Html.GetEnumSelectList<OrderBooksBy>()" class="form-control">
+
+    </select>
+    <input hidden asp-for="OrderAsc" id="orderAsc"/>
+    <button class="btn btn-secondary" onclick="sort()">
+        @if (Model.OrderAsc)
+        {
+            <i class="bi bi-sort-down"></i>
+        }
+        else
+        {
+            <i class="bi bi-sort-up"></i>
+        }
+    </button>
+</form>
+
+<hr/>
 <div class="d-flex flex-wrap">
     @foreach (Book book in Model.Books)
     {
         <a asp-action="Edit" asp-route-id="@book.Id" class="book-card text-decoration-none m-2" style="">
             <div class="card">
-                <img src="@book.ImagePath" class="card-img-top img-fluid" style="aspect-ratio: 0.7; object-fit: cover" alt="Cover" />
-                <div class="card-body" >
+                <img src="@book.ImagePath" class="card-img-top img-fluid" style="aspect-ratio: 0.7; object-fit: cover"
+                     alt="Cover"/>
+                <div class="card-body">
                     <p class="card-text">@book.Title</p>
                 </div>
             </div>
         </a>
     }
 </div>
+
+@section Scripts
+{
+    <script>
+        $(function () {
+
+            $("select[auto-submit]").change(function () {
+                $(this).closest("form").submit();
+            });
+
+        });
+        function sort(){
+            const input = $("orderAsc");
+            const oldValue = input.val();
+            input.val(oldValue === "true" ? "false" : "true");
+            input.closest("form").submit();
+        }
+    </script>
+}

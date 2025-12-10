@@ -69,13 +69,13 @@ public partial class BookController : Controller
         }
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(IndexBookViewModel viewModel)
     {
         try
         {
             IdentityUser requestingUser = await GetRequestingUser();
-            IEnumerable<Book> books = _getBooksByUserUseCase.Execute(requestingUser);
-            return View(IndexBookViewModel.Create(string.Empty, books));
+            IEnumerable<Book> books = _getBooksByUserUseCase.Execute(viewModel.Order, viewModel.OrderAsc, requestingUser);
+            return View(IndexBookViewModel.Create(books, viewModel.Order));
         }
         catch (Exception e)
         {
@@ -120,15 +120,15 @@ public partial class BookController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Search(string query)
+    public async Task<IActionResult> Search(IndexBookViewModel viewModel)
     {
         try
         {
-            if (string.IsNullOrEmpty(query))
-                return RedirectToAction(nameof(Index));
+            if (string.IsNullOrEmpty(viewModel.SearchText))
+                return RedirectToAction(nameof(Index), viewModel);
             IdentityUser requestingUser = await GetRequestingUser();
-            IEnumerable<Book> searchResult = _searchUseCase.Execute(query, requestingUser);
-            return View("Index", IndexBookViewModel.Create(query, searchResult));
+            IEnumerable<Book> searchResult = _searchUseCase.Execute(viewModel.SearchText, viewModel.Order, viewModel.OrderAsc, requestingUser);
+            return View("Index", IndexBookViewModel.Create(searchResult, viewModel.Order, viewModel.SearchText));
         }
         catch (Exception e)
         {

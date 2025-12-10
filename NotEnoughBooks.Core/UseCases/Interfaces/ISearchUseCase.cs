@@ -5,5 +5,5 @@ namespace NotEnoughBooks.Core.UseCases.Interfaces;
 
 public interface ISearchUseCase
 {
-    IEnumerable<Book> Execute(string query, IdentityUser user);
+    IEnumerable<Book> Execute(string query, OrderBooksBy viewModelOrder, bool orderAsc, IdentityUser user);
 }
