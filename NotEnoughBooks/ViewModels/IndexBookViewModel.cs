@@ -19,8 +19,8 @@ public class IndexBookViewModel
     
     public string SearchText { get; set; }
     public IEnumerable<Book> Books { get; set; }
-    public OrderBooksBy Order { get; set; }
-    public bool OrderAsc { get; set; }
+    public OrderBooksBy Order { get; set; } = OrderBooksBy.Title;
+    public bool OrderAsc { get; set; } = true;
     
     public static IndexBookViewModel Create(IEnumerable<Book> books, OrderBooksBy order, bool orderAsc, string searchText = "")
     {

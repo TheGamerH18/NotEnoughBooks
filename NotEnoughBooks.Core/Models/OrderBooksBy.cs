@@ -1,17 +1,18 @@
 ﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace NotEnoughBooks.Core.Models;
 
 public enum OrderBooksBy
 {
-    [Description("Added Date")]
+    [Display(Name = "Added Date")]
     AddDate,
-    [Description("Price")]
+    [Display(Name = "Price")]
     Price,
-    [Description("Pages")]
+    [Display(Name = "Pages")]
     PageCount,
-    [Description("Release Date")]
+    [Display(Name = "Release Date")]
     ReleaseDate,
-    [Description("Title")]
+    [Display(Name = "Title")]
     Title
 }
