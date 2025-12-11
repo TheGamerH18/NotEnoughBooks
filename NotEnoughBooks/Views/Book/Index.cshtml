@@ -5,37 +5,37 @@
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="d-flex flex-wrap">
-    <h1 class="mx-2 flex-fill">Index</h1>
-    <form class="form-floating" style="min-width: 30rem" asp-action="Search" method="get">
-        <input hidden asp-for="OrderAsc"/>
-        <input hidden asp-for="Order"/>
-        <input asp-for="SearchText" class="form-control" id="queryInput" placeholder="Search"
-               value="@Model.SearchText"/>
-        <label asp-for="SearchText" class="form-label">Search</label>
-        <input type="submit" hidden/>
-    </form>
-</div>
+<form asp-action="Search" method="get">
+    <div class="d-flex flex-wrap">
+        <h1 class="mx-2 flex-fill">Index</h1>
+        <div class="form-floating" style="min-width: 30rem">
+            <input asp-for="SearchText" class="form-control" id="queryInput" placeholder="Search"/>
+            <label asp-for="SearchText" class="form-label">Search</label>
+            <input type="submit" hidden/>
+        </div>
+    </div>
+    <hr/>
 
-<form>
     <input hidden asp-for="SearchText"/>
-    <select auto-submit asp-for="Order" asp-items="Html.GetEnumSelectList<OrderBooksBy>()" class="form-control">
+    <input hidden asp-for="OrderAsc"/>
+    
+    <div class="input-group mx-2 mb-2" style="max-width: 20rem">
+        <select auto-submit asp-for="Order" asp-items="Html.GetEnumSelectList<OrderBooksBy>()" class="form-select">
 
-    </select>
-    <input hidden asp-for="OrderAsc" id="orderAsc"/>
-    <button class="btn btn-secondary" onclick="sort()">
-        @if (Model.OrderAsc)
-        {
-            <i class="bi bi-sort-down"></i>
-        }
-        else
-        {
-            <i class="bi bi-sort-up"></i>
-        }
-    </button>
+        </select>
+        <button class="btn btn-secondary" onclick="sort()">
+            @if (Model.OrderAsc)
+            {
+                <i class="bi bi-sort-down"></i>
+            }
+            else
+            {
+                <i class="bi bi-sort-up"></i>
+            }
+        </button>
+    </div>
 </form>
 
-<hr/>
 <div class="d-flex flex-wrap">
     @foreach (Book book in Model.Books)
     {
@@ -55,16 +55,14 @@
 {
     <script>
         $(function () {
-
             $("select[auto-submit]").change(function () {
                 $(this).closest("form").submit();
             });
-
         });
-        function sort(){
-            const input = $("orderAsc");
-            const oldValue = input.val();
-            input.val(oldValue === "true" ? "false" : "true");
+
+        function sort() {
+            const input = $("#OrderAsc");
+            input.prop("checked", !input.prop("checked"));
             input.closest("form").submit();
         }
     </script>

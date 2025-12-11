@@ -75,7 +75,7 @@ public partial class BookController : Controller
         {
             IdentityUser requestingUser = await GetRequestingUser();
             IEnumerable<Book> books = _getBooksByUserUseCase.Execute(viewModel.Order, viewModel.OrderAsc, requestingUser);
-            return View(IndexBookViewModel.Create(books, viewModel.Order));
+            return View(IndexBookViewModel.Create(books, viewModel.Order, viewModel.OrderAsc));
         }
         catch (Exception e)
         {
@@ -128,7 +128,7 @@ public partial class BookController : Controller
                 return RedirectToAction(nameof(Index), viewModel);
             IdentityUser requestingUser = await GetRequestingUser();
             IEnumerable<Book> searchResult = _searchUseCase.Execute(viewModel.SearchText, viewModel.Order, viewModel.OrderAsc, requestingUser);
-            return View("Index", IndexBookViewModel.Create(searchResult, viewModel.Order, viewModel.SearchText));
+            return View("Index", IndexBookViewModel.Create(searchResult, viewModel.Order, viewModel.OrderAsc, viewModel.SearchText));
         }
         catch (Exception e)
         {
