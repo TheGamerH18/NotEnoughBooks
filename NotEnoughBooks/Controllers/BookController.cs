@@ -9,7 +9,6 @@ using NotEnoughBooks.ViewModels;
 namespace NotEnoughBooks.Controllers;
 
 [GenerateFullConstructor]
-[Route("[controller]/[action]")]
 [Authorize]
 public partial class BookController : Controller
 {
@@ -18,6 +17,7 @@ public partial class BookController : Controller
     private readonly ISaveBookUseCase _saveBookUseCase;
     private readonly IGetBooksByUserUseCase _getBooksByUserUseCase;
     private readonly IGetBookUseCase _getBookUseCase;
+    private readonly ISearchUseCase _searchUseCase;
     private readonly UserManager<IdentityUser> _userManager;
     
     [HttpGet]
@@ -68,13 +68,18 @@ public partial class BookController : Controller
         }
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(IndexBookViewModel viewModel)
     {
         try
         {
             IdentityUser requestingUser = await GetRequestingUser();
-            IEnumerable<Book> books = _getBooksByUserUseCase.Execute(requestingUser);
-            return View(books);
+            if (string.IsNullOrEmpty(viewModel.SearchText))
+            {
+                IEnumerable<Book> books = _getBooksByUserUseCase.Execute(viewModel.Order, viewModel.OrderAsc, requestingUser);
+                return View(IndexBookViewModel.Create(books, viewModel.Order, viewModel.OrderAsc));
+            }
+            IEnumerable<Book> searchResult = _searchUseCase.Execute(viewModel.SearchText, viewModel.Order, viewModel.OrderAsc, requestingUser);
+            return View(IndexBookViewModel.Create(searchResult, viewModel.Order, viewModel.OrderAsc, viewModel.SearchText));
         }
         catch (Exception e)
         {

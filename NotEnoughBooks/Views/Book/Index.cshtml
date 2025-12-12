@@ -1,23 +1,69 @@
 @using NotEnoughBooks.Core.Models
-@model IEnumerable<NotEnoughBooks.Core.Models.Book>
+@model NotEnoughBooks.ViewModels.IndexBookViewModel
 
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<form method="get">
+    <div class="d-flex flex-wrap">
+        <h1 class="mx-2 flex-fill">Index</h1>
+        <div class="form-floating" style="min-width: 30rem">
+            <input asp-for="SearchText" class="form-control" id="queryInput" placeholder="Search"/>
+            <label asp-for="SearchText" class="form-label">Search</label>
+            <input type="submit" hidden/>
+        </div>
+    </div>
+    <hr/>
 
-<h1 class="ms-2">Index</h1>
-<hr />
+    <input hidden asp-for="SearchText"/>
+    <input hidden asp-for="OrderAsc"/>
+    
+    <div class="input-group mx-2 mb-2" style="max-width: 20rem">
+        <select auto-submit asp-for="Order" asp-items="Html.GetEnumSelectList<OrderBooksBy>()" class="form-select">
+
+        </select>
+        <button class="btn btn-secondary" onclick="sort()">
+            @if (Model.OrderAsc)
+            {
+                <i class="bi bi-sort-down"></i>
+            }
+            else
+            {
+                <i class="bi bi-sort-up"></i>
+            }
+        </button>
+    </div>
+</form>
+
 <div class="d-flex flex-wrap">
-    @foreach (Book book in Model)
+    @foreach (Book book in Model.Books)
     {
         <a asp-action="Edit" asp-route-id="@book.Id" class="book-card text-decoration-none m-2" style="">
             <div class="card">
-                <img src="@book.ImagePath" class="card-img-top img-fluid" style="aspect-ratio: 0.7; object-fit: cover" alt="Cover" />
-                <div class="card-body" >
+                <img src="@book.ImagePath" class="card-img-top img-fluid" style="aspect-ratio: 0.7; object-fit: cover"
+                     alt="Cover"/>
+                <div class="card-body">
                     <p class="card-text">@book.Title</p>
                 </div>
             </div>
         </a>
     }
 </div>
+
+@section Scripts
+{
+    <script>
+        $(function () {
+            $("select[auto-submit]").change(function () {
+                $(this).closest("form").submit();
+            });
+        });
+
+        function sort() {
+            const input = $("#OrderAsc");
+            input.prop("checked", !input.prop("checked"));
+            input.closest("form").submit();
+        }
+    </script>
+}

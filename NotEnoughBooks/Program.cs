@@ -32,6 +32,7 @@ public class Program
         builder.Services.AddScoped<IGetBooksByUserPort, GetBooksByUserAdapter>();
         builder.Services.AddScoped<ICacheThumbnailPort, CacheThumbnailAdapter>();
         builder.Services.AddScoped<IGetBookByIdPort, GetBookByIdAdapter>();
+        builder.Services.AddScoped<ISearchBooksPort, SearchBooksAdapter>();
         builder.Services.AddSingleton<IAdminConfigurationPort, AdminConfigurationAdapter>();
         
         builder.Services.AddCore();
@@ -72,7 +73,7 @@ public class Program
 
         app.MapControllerRoute(
             name: "default",
-            pattern: "{controller=Home}/{action=Index}/{id?}");
+            pattern: "{controller=Book}/{action=Index}/{id?}");
         app.MapRazorPages();
 
         app.Run();
