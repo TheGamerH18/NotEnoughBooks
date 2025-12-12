@@ -1,5 +1,6 @@
 using ConstructorGenerator.Attributes;
 using Microsoft.AspNetCore.Identity;
+using NotEnoughBooks.Core.Extensions;
 using NotEnoughBooks.Core.Models;
 using NotEnoughBooks.Core.Ports;
 using NotEnoughBooks.Core.UseCases.Interfaces;

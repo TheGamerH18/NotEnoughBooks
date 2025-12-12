@@ -9,7 +9,6 @@ using NotEnoughBooks.ViewModels;
 namespace NotEnoughBooks.Controllers;
 
 [GenerateFullConstructor]
-[Route("[controller]/[action]")]
 [Authorize]
 public partial class BookController : Controller
 {
@@ -74,8 +73,13 @@ public partial class BookController : Controller
         try
         {
             IdentityUser requestingUser = await GetRequestingUser();
-            IEnumerable<Book> books = _getBooksByUserUseCase.Execute(viewModel.Order, viewModel.OrderAsc, requestingUser);
-            return View(IndexBookViewModel.Create(books, viewModel.Order, viewModel.OrderAsc));
+            if (string.IsNullOrEmpty(viewModel.SearchText))
+            {
+                IEnumerable<Book> books = _getBooksByUserUseCase.Execute(viewModel.Order, viewModel.OrderAsc, requestingUser);
+                return View(IndexBookViewModel.Create(books, viewModel.Order, viewModel.OrderAsc));
+            }
+            IEnumerable<Book> searchResult = _searchUseCase.Execute(viewModel.SearchText, viewModel.Order, viewModel.OrderAsc, requestingUser);
+            return View(IndexBookViewModel.Create(searchResult, viewModel.Order, viewModel.OrderAsc, viewModel.SearchText));
         }
         catch (Exception e)
         {
@@ -111,24 +115,6 @@ public partial class BookController : Controller
                 return NotFound();
             
             return RedirectToAction(nameof(Index));
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "An error occured");
-            return StatusCode(500);
-        }
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> Search(IndexBookViewModel viewModel)
-    {
-        try
-        {
-            if (string.IsNullOrEmpty(viewModel.SearchText))
-                return RedirectToAction(nameof(Index), viewModel);
-            IdentityUser requestingUser = await GetRequestingUser();
-            IEnumerable<Book> searchResult = _searchUseCase.Execute(viewModel.SearchText, viewModel.Order, viewModel.OrderAsc, requestingUser);
-            return View("Index", IndexBookViewModel.Create(searchResult, viewModel.Order, viewModel.OrderAsc, viewModel.SearchText));
         }
         catch (Exception e)
         {
