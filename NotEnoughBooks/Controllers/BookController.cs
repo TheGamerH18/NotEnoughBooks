@@ -18,6 +18,7 @@ public partial class BookController : Controller
     private readonly IGetBooksByUserUseCase _getBooksByUserUseCase;
     private readonly IGetBookUseCase _getBookUseCase;
     private readonly ISearchUseCase _searchUseCase;
+    private readonly IDeleteBookUseCase _deleteBookUseCase;
     private readonly UserManager<IdentityUser> _userManager;
     
     [HttpGet]
@@ -68,6 +69,7 @@ public partial class BookController : Controller
         }
     }
 
+    [HttpGet]
     public async Task<IActionResult> Index(IndexBookViewModel viewModel)
     {
         try
@@ -88,7 +90,7 @@ public partial class BookController : Controller
         }
     }
 
-    [HttpGet("{id:guid}")]
+    [HttpGet]
     public async Task<IActionResult> Edit(Guid id)
     {
         try
@@ -114,6 +116,22 @@ public partial class BookController : Controller
             if (!execute)
                 return NotFound();
             
+            return RedirectToAction(nameof(Index));
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "An error occured");
+            return StatusCode(500);
+        }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        try
+        {
+            IdentityUser requestingUser = await GetRequestingUser();
+            await _deleteBookUseCase.Execute(id, requestingUser);
             return RedirectToAction(nameof(Index));
         }
         catch (Exception e)

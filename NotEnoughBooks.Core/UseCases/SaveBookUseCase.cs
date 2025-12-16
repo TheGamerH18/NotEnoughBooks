@@ -35,7 +35,7 @@ public partial class SaveBookUseCase : ISaveBookUseCase
                 // Image changed, delete old one and download new
                 if (newBook.ImagePath != oldBook.ImagePath)
                 {
-                    await _cacheThumbnailPort.DeleteThumbnail(oldBook.ImagePath.Split("/").Last());
+                    await _cacheThumbnailPort.DeleteThumbnail(oldBook.ImagePath);
                     oldBook.ImagePath = await _cacheThumbnailPort.SaveThumbnail(newBook.ImagePath, newBook.Id);
                 }
                 oldBook.Authors = newBook.Authors;
