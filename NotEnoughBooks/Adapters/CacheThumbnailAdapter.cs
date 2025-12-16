@@ -46,7 +46,9 @@ public partial class CacheThumbnailAdapter : ICacheThumbnailPort
     public Task DeleteThumbnail(string fileName)
     {
         fileName = fileName.Split("/").Last();
-        File.Delete(Path.Combine(PathProvider.ThumbnailsFolderPath, fileName));
+        string filePath = Path.Combine(PathProvider.ThumbnailsFolderPath, fileName);
+        if (File.Exists(filePath))
+            File.Delete(filePath);
         return Task.CompletedTask;
     }
 
