@@ -43,7 +43,7 @@ public partial class BookController : Controller
             BookResult result = await _requestBookUseCase.Execute(query);
             
             if (result.Success)
-                return View(result.Book);
+                return View(result);
             
             return BadRequest(result.Message);
         }

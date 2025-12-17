@@ -7,13 +7,16 @@ public class BookResult
     public string Message { get; set; }
     
     public Book Book { get; set; }
+    
+    public string[] ImageUrls { get; set; }
 
-    public static BookResult Create(Book book)
+    public static BookResult Create(Book book, string[] foundImageUrls = null)
     {
         return new BookResult()
         {
             Success = true,
-            Book = book
+            Book = book,
+            ImageUrls = foundImageUrls ?? Array.Empty<string>()
         };
     }
 

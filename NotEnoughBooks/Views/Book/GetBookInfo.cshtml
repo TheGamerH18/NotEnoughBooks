@@ -1,4 +1,4 @@
-@model NotEnoughBooks.Core.Models.Book
+@model NotEnoughBooks.Core.Models.BookResult
 
 @{
     ViewData["Title"] = "GetBookInfo";
@@ -24,6 +24,18 @@
 @* </div> *@
 
 @section Scripts {
-
+    <script>
+        const imagePathInput = $("#Book_ImagePath");
+        
+        function select(url) {
+            imagePathInput.val(url);
+            $("#ImageImg").attr("src", url);
+        }
+        
+        imagePathInput.on("change", function () {
+            const imageUrl = imagePathInput.val();
+            $("#ImageImg").attr("src", imageUrl);
+        })
+    </script>
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }

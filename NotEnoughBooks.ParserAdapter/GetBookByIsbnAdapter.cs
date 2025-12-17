@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using System.Net.Mime;
 using System.Text.RegularExpressions;
 using ConstructorGenerator.Attributes;
 using HtmlAgilityPack;
@@ -14,6 +15,13 @@ public partial class GetBookByIsbnAdapter : IGetBookByIsbnPort
     private const string GOOGLE_BOOKS_URL = "https://www.googleapis.com/books/v1/volumes?q=isbn:";
     private const string DNB_COVER_URL = "https://portal.dnb.de/opac/mvb/cover?isbn=";
 
+    private static readonly string[] ValidTypes =
+    [
+        MediaTypeNames.Image.Jpeg,
+        MediaTypeNames.Image.Png,
+        MediaTypeNames.Image.Webp,
+    ];
+
     private readonly HttpClient _httpClient;
 
     public async Task<BookResult> GetBook(string isbn)
@@ -22,10 +30,8 @@ public partial class GetBookByIsbnAdapter : IGetBookByIsbnPort
         if (!bookResult.Success)
             return bookResult;
 
-        if (bookResult.Book.Price == 0)
-        {
+        if (bookResult.Book.Price == 0) 
             bookResult.Book.Price = await GetBookPriceFromDnb(bookResult.Book.Isbn);
-        }
 
         return bookResult;
     }
@@ -40,11 +46,13 @@ public partial class GetBookByIsbnAdapter : IGetBookByIsbnPort
 
         if (responseObject.TotalItems == 0)
             return BookResult.Create("No Books Found");
-        
+
         GoogleVolumeInfo responseObjectItem = responseObject.Items[0].VolumeInfo;
-        
-        DateOnly publishedDate = responseObjectItem.PublishedDate.Length != 4 ? DateOnly.Parse(responseObjectItem.PublishedDate) : new DateOnly(int.Parse(responseObjectItem.PublishedDate), 1, 1);
-        
+
+        DateOnly publishedDate = responseObjectItem.PublishedDate.Length != 4
+            ? DateOnly.Parse(responseObjectItem.PublishedDate)
+            : new DateOnly(int.Parse(responseObjectItem.PublishedDate), 1, 1);
+
         Book result = new Book()
         {
             Isbn = responseObjectItem.IndustryIdentifiers.First(x => x.Type == "ISBN_13").Identifier,
@@ -56,9 +64,53 @@ public partial class GetBookByIsbnAdapter : IGetBookByIsbnPort
             Subtitle = responseObjectItem.Subtitle,
             Publisher = responseObjectItem.Publisher
         };
-        result.ImagePath = responseObjectItem.ImageLinks?.Thumbnail ?? DNB_COVER_URL+result.Isbn;
+        string[] imageUrls = await GetImages(responseObjectItem, result.Isbn);
+        result.ImagePath = imageUrls.First();
+
+        return BookResult.Create(result, imageUrls);
+    }
+
+    private async Task<string[]> GetImages(GoogleVolumeInfo responseObjectItem, string isbn)
+    {
+        List<string> result = new();
+
+        string checkDnbCover = await CheckDnbCover(isbn);
+        if (!string.IsNullOrEmpty(checkDnbCover))
+            result.Add(checkDnbCover);
         
-        return BookResult.Create(result);
+        string imageFromResponse = await GetImageFromResponse(responseObjectItem);
+        if (!string.IsNullOrEmpty(imageFromResponse))
+            result.Add(imageFromResponse);
+
+        return result.ToArray();
+    }
+
+    private async Task<string> CheckDnbCover(string isbn)
+    {
+        string imagePath = DNB_COVER_URL + isbn;
+        HttpResponseMessage httpResponseMessage = await _httpClient.GetAsync(imagePath);
+        if (!httpResponseMessage.IsSuccessStatusCode)
+            return null;
+        string contentTypeMediaType = httpResponseMessage.Content.Headers.ContentType?.MediaType;
+        if (ValidTypes.Contains(contentTypeMediaType))
+            return imagePath;
+        return null;
+    }
+
+    private async Task<string> GetImageFromResponse(GoogleVolumeInfo responseObjectItem)
+    {
+        string imagePath = responseObjectItem.ImageLinks?.Thumbnail;
+        if (imagePath == null)
+            return null;
+
+        HttpResponseMessage httpResponseMessage = await _httpClient.GetAsync(imagePath);
+        if (!httpResponseMessage.IsSuccessStatusCode)
+            return null;
+        string contentTypeMediaType = httpResponseMessage.Content.Headers.ContentType?.MediaType;
+
+        if (ValidTypes.Contains(contentTypeMediaType))
+            return imagePath;
+        return null;
     }
 
     private async Task<double> GetBookPriceFromDnb(string query)
@@ -89,7 +141,8 @@ public partial class GetBookByIsbnAdapter : IGetBookByIsbnPort
                 continue;
 
             MatchCollection priceMatches = PriceRegex().Matches(secondCell.InnerText.Trim());
-            string dePrice = priceMatches.FirstOrDefault(match => match.Value.Split(' ')[1] == "(DE)")?.Value.Split(' ')[0] ?? "0";
+            string dePrice =
+                priceMatches.FirstOrDefault(match => match.Value.Split(' ')[1] == "(DE)")?.Value.Split(' ')[0] ?? "0";
             return double.Parse(dePrice);
         }
 
@@ -98,7 +151,7 @@ public partial class GetBookByIsbnAdapter : IGetBookByIsbnPort
 
     [GeneratedRegex(@"((\d{1,})\.\d\d \(\w\w\))")]
     private static partial Regex PriceRegex();
-    
+
     // ReSharper disable UnusedAutoPropertyAccessor.Local
     private class GoogleBooksResult
     {
