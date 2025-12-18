@@ -51,7 +51,7 @@
         </div>
         <div class="input-group mb-3">
             <div class="form-floating">
-                <input asp-for="Book.ImagePath" class="form-control" value="@Model.ImageUrls.FirstOrDefault()"/>
+                <input asp-for="Book.ImagePath" class="form-control" value="@Model.ImageUrls.FirstOrDefault(Model.Book.ImagePath)"/>
                 <label asp-for="Book.ImagePath" class="control-label">Image Url</label>
                 <span asp-validation-for="Book.ImagePath" class="text-danger"></span>
             </div>

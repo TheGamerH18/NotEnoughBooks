@@ -87,30 +87,44 @@ public partial class GetBookByIsbnAdapter : IGetBookByIsbnPort
 
     private async Task<string> CheckDnbCover(string isbn)
     {
-        string imagePath = DNB_COVER_URL + isbn;
-        HttpResponseMessage httpResponseMessage = await _httpClient.GetAsync(imagePath);
-        if (!httpResponseMessage.IsSuccessStatusCode)
+        try
+        {
+            string imagePath = DNB_COVER_URL + isbn;
+            HttpResponseMessage httpResponseMessage = await _httpClient.GetAsync(imagePath);
+            if (!httpResponseMessage.IsSuccessStatusCode)
+                return null;
+            string contentTypeMediaType = httpResponseMessage.Content.Headers.ContentType?.MediaType;
+            if (ValidTypes.Contains(contentTypeMediaType))
+                return imagePath;
             return null;
-        string contentTypeMediaType = httpResponseMessage.Content.Headers.ContentType?.MediaType;
-        if (ValidTypes.Contains(contentTypeMediaType))
-            return imagePath;
-        return null;
+        }
+        catch (Exception )
+        {
+            return null;
+        }
     }
 
     private async Task<string> GetImageFromResponse(GoogleVolumeInfo responseObjectItem)
     {
-        string imagePath = responseObjectItem.ImageLinks?.Thumbnail;
-        if (imagePath == null)
-            return null;
+        try
+        {
+            string imagePath = responseObjectItem.ImageLinks?.Thumbnail;
+            if (imagePath == null)
+                return null;
 
-        HttpResponseMessage httpResponseMessage = await _httpClient.GetAsync(imagePath);
-        if (!httpResponseMessage.IsSuccessStatusCode)
-            return null;
-        string contentTypeMediaType = httpResponseMessage.Content.Headers.ContentType?.MediaType;
+            HttpResponseMessage httpResponseMessage = await _httpClient.GetAsync(imagePath);
+            if (!httpResponseMessage.IsSuccessStatusCode)
+                return null;
+            string contentTypeMediaType = httpResponseMessage.Content.Headers.ContentType?.MediaType;
 
-        if (ValidTypes.Contains(contentTypeMediaType))
-            return imagePath;
-        return null;
+            if (ValidTypes.Contains(contentTypeMediaType))
+                return imagePath;
+            return null;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
     }
 
     private async Task<double> GetBookPriceFromDnb(string query)
