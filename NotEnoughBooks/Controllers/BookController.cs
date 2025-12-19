@@ -42,7 +42,7 @@ public partial class BookController : Controller
         {
             BookParserResult parserResult = await _requestNewBookUseCase.Execute(query);
             if (!parserResult.Success) 
-                return BadRequest(parserResult.Message);
+                return BadRequest(parserResult.ErrorMessage);
 
             BookFormViewModel bookFormViewModel = BookFormViewModel.Create(parserResult.Book);
             return View(bookFormViewModel);
