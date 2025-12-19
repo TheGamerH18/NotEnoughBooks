@@ -12,7 +12,7 @@
 }
 else
 {
-    <form asp-action="Edit" method="post" asp-route-id="">
+    <form asp-action="Edit" method="post" enctype="multipart/form-data" asp-route-id="">
         @{
             await Html.RenderPartialAsync("BookForm", Model.BookFormViewModel);
         }

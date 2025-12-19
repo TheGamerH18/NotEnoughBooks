@@ -13,7 +13,7 @@ public partial class SaveBookUseCase : ISaveBookUseCase
     private readonly ICacheThumbnailPort _cacheThumbnailPort;
     private readonly IGetBookByIdPort _getBookByIdPort;
 
-    public async Task<bool> Execute(Book newBook, IdentityUser user)
+    public async Task<bool> Execute(Book newBook, IdentityUser user, Stream coverFileStream = null, string fileExtension = null)
     {
         try
         {
@@ -23,7 +23,15 @@ public partial class SaveBookUseCase : ISaveBookUseCase
             if (newBook.Id == Guid.Empty)
             {
                 newBook.Id = Guid.NewGuid();
-                newBook.ImagePath = await _cacheThumbnailPort.SaveThumbnail(newBook.ImagePath, newBook.Id);
+                if (coverFileStream != null && fileExtension != null)
+                {
+                    await _cacheThumbnailPort.DeleteThumbnail(newBook.ImagePath);
+                    newBook.ImagePath = await _cacheThumbnailPort.SaveThumbnail(coverFileStream, fileExtension, newBook.Id);
+                }
+                else if (!string.IsNullOrEmpty(newBook.ImagePath))
+                {
+                    newBook.ImagePath = await _cacheThumbnailPort.SaveThumbnail(newBook.ImagePath, newBook.Id);
+                }
                 await _saveBookPort.SaveBook(newBook);
             }
             else
@@ -32,12 +40,18 @@ public partial class SaveBookUseCase : ISaveBookUseCase
                 if (oldBook == null || oldBook.OwnedBy != user)
                     return false;
 
-                // Image changed, delete old one and download new
-                if (newBook.ImagePath != oldBook.ImagePath)
+                if (coverFileStream != null && fileExtension != null)
+                {
+                    await _cacheThumbnailPort.DeleteThumbnail(oldBook.ImagePath);
+                    oldBook.ImagePath = await _cacheThumbnailPort.SaveThumbnail(coverFileStream, fileExtension, oldBook.Id);
+                }
+                else if (newBook.ImagePath != oldBook.ImagePath)
                 {
                     await _cacheThumbnailPort.DeleteThumbnail(oldBook.ImagePath);
                     oldBook.ImagePath = await _cacheThumbnailPort.SaveThumbnail(newBook.ImagePath, newBook.Id);
                 }
+
+                
                 oldBook.Authors = newBook.Authors;
                 oldBook.Description = newBook.Description;
                 oldBook.Isbn = newBook.Isbn;

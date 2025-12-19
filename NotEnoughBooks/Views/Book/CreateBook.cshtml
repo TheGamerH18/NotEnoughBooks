@@ -11,7 +11,7 @@
 <hr/>
 <div class="row">
     <div>
-        <form asp-action="SaveBook" method="post">
+        <form asp-action="SaveBook" enctype="multipart/form-data" method="post">
             @{
                 await Html.RenderPartialAsync("BookForm", Model);
             }

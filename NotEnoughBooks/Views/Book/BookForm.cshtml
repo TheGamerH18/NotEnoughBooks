@@ -70,6 +70,10 @@
                 </ul>
             }
         </div>
+        <div class="input-group mb-3">
+            <label class="input-group-text" asp-for="Image">Upload Cover</label>
+            <input type="file" class="form-control" asp-for="Image" accept="image/jpeg, image/png, image/webp">
+        </div>
     </div>
     <div class="m-3">
         <img id="ImageImg" src="@Model.Book.ImagePath" style="max-width: 35rem; min-width: 20rem" alt="Cover"

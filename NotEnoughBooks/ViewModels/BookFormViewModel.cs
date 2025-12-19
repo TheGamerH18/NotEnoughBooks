@@ -7,6 +7,8 @@ public class BookFormViewModel
     public Book Book { get; set; }
 
     public string[] ImageUrls { get; set; } = Array.Empty<string>();
+    
+    public IFormFile Image { get; set; }
 
     public static BookFormViewModel Create(Book book)
     {
