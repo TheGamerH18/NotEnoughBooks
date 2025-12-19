@@ -1,4 +1,4 @@
-@model NotEnoughBooks.Core.Models.BookResult
+@model NotEnoughBooks.ViewModels.BookFormViewModel
 
 <div class="d-lg-flex">
     <div class="flex-fill m-3">
@@ -59,9 +59,7 @@
             @if (Model.ImageUrls.Length != 0)
             {
                 <button class="dropdown-toggle input-group-text" type="button" data-bs-toggle="dropdown"
-                        aria-expanded="false">
-                    
-                </button>
+                        aria-expanded="false"></button>
                 <ul class="dropdown-menu">
                     @foreach (string url in Model.ImageUrls)
                     {

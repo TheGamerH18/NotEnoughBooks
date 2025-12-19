@@ -2,7 +2,7 @@ using NotEnoughBooks.Core.Models;
 
 namespace NotEnoughBooks.Core.UseCases.Interfaces;
 
-public interface IRequestBookUseCase
+public interface IRequestNewBookUseCase
 {
-    Task<BookResult> Execute(string isbn);
+    Task<BookParserResult> Execute(string isbn);
 }

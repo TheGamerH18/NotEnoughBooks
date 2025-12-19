@@ -4,5 +4,5 @@ namespace NotEnoughBooks.Core.Ports;
 
 public interface IGetBookByIsbnPort
 {
-    public Task<BookResult> GetBook(string isbn);
+    public Task<BookParserResult> GetBook(string isbn);
 }

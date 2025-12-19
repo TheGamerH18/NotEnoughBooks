@@ -13,14 +13,14 @@ namespace NotEnoughBooks.Controllers;
 public partial class BookController : Controller
 {
     private readonly ILogger<BookController> _logger;
-    private readonly IRequestBookUseCase _requestBookUseCase;
+    private readonly IRequestNewBookUseCase _requestNewBookUseCase;
     private readonly ISaveBookUseCase _saveBookUseCase;
     private readonly IGetBooksByUserUseCase _getBooksByUserUseCase;
     private readonly IGetBookUseCase _getBookUseCase;
     private readonly ISearchUseCase _searchUseCase;
     private readonly IDeleteBookUseCase _deleteBookUseCase;
     private readonly UserManager<IdentityUser> _userManager;
-    
+
     [HttpGet]
     public IActionResult AddBook()
     {
@@ -34,18 +34,19 @@ public partial class BookController : Controller
             return StatusCode(500);
         }
     }
-    
+
     [HttpGet]
-    public async Task<IActionResult> GetBookInfo(string query)
+    public async Task<IActionResult> CreateBook(string query)
     {
         try
         {
-            BookResult result = await _requestBookUseCase.Execute(query);
-            
-            if (result.Success)
-                return View(result);
-            
-            return BadRequest(result.Message);
+            BookParserResult parserResult = await _requestNewBookUseCase.Execute(query);
+            if (!parserResult.Success) 
+                return BadRequest(parserResult.Message);
+
+            BookFormViewModel bookFormViewModel = BookFormViewModel.Create(parserResult.Book);
+            return View(bookFormViewModel);
+
         }
         catch (Exception e)
         {
@@ -77,11 +78,15 @@ public partial class BookController : Controller
             IdentityUser requestingUser = await GetRequestingUser();
             if (string.IsNullOrEmpty(viewModel.SearchText))
             {
-                IEnumerable<Book> books = _getBooksByUserUseCase.Execute(viewModel.Order, viewModel.OrderAsc, requestingUser);
+                IEnumerable<Book> books =
+                    _getBooksByUserUseCase.Execute(viewModel.Order, viewModel.OrderAsc, requestingUser);
                 return View(IndexBookViewModel.Create(books, viewModel.Order, viewModel.OrderAsc));
             }
-            IEnumerable<Book> searchResult = _searchUseCase.Execute(viewModel.SearchText, viewModel.Order, viewModel.OrderAsc, requestingUser);
-            return View(IndexBookViewModel.Create(searchResult, viewModel.Order, viewModel.OrderAsc, viewModel.SearchText));
+
+            IEnumerable<Book> searchResult = _searchUseCase.Execute(viewModel.SearchText, viewModel.Order,
+                viewModel.OrderAsc, requestingUser);
+            return View(IndexBookViewModel.Create(searchResult, viewModel.Order, viewModel.OrderAsc,
+                viewModel.SearchText));
         }
         catch (Exception e)
         {
@@ -96,8 +101,10 @@ public partial class BookController : Controller
         try
         {
             IdentityUser requestingUser = await GetRequestingUser();
-            BookResult bookResult = await _getBookUseCase.Execute(id, requestingUser);
-            return View(bookResult);
+            BookResult bookParserResult = await _getBookUseCase.Execute(id, requestingUser);
+            
+            EditViewModel editViewModel = EditViewModel.Create(bookParserResult); 
+            return View(editViewModel);
         }
         catch (Exception e)
         {
@@ -115,7 +122,7 @@ public partial class BookController : Controller
             bool execute = await _saveBookUseCase.Execute(book, requestingUser);
             if (!execute)
                 return NotFound();
-            
+
             return RedirectToAction(nameof(Index));
         }
         catch (Exception e)

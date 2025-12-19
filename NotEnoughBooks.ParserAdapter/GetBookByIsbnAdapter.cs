@@ -24,28 +24,28 @@ public partial class GetBookByIsbnAdapter : IGetBookByIsbnPort
 
     private readonly HttpClient _httpClient;
 
-    public async Task<BookResult> GetBook(string isbn)
+    public async Task<BookParserResult> GetBook(string isbn)
     {
-        BookResult bookResult = await GetBookByQuery(isbn);
-        if (!bookResult.Success)
-            return bookResult;
+        BookParserResult bookParserResult = await GetBookByQuery(isbn);
+        if (!bookParserResult.Success)
+            return bookParserResult;
 
-        if (bookResult.Book.Price == 0) 
-            bookResult.Book.Price = await GetBookPriceFromDnb(bookResult.Book.Isbn);
+        if (bookParserResult.Book.Price == 0) 
+            bookParserResult.Book.Price = await GetBookPriceFromDnb(bookParserResult.Book.Isbn);
 
-        return bookResult;
+        return bookParserResult;
     }
 
-    private async Task<BookResult> GetBookByQuery(string isbn)
+    private async Task<BookParserResult> GetBookByQuery(string isbn)
     {
         HttpResponseMessage responseMessage = await _httpClient.GetAsync(GOOGLE_BOOKS_URL + isbn);
         if (!responseMessage.IsSuccessStatusCode)
-            return BookResult.Create(responseMessage.ReasonPhrase);
+            return BookParserResult.Create(responseMessage.ReasonPhrase);
 
         GoogleBooksResult responseObject = await responseMessage.Content.ReadFromJsonAsync<GoogleBooksResult>();
 
         if (responseObject.TotalItems == 0)
-            return BookResult.Create("No Books Found");
+            return BookParserResult.Create("No Books Found");
 
         GoogleVolumeInfo responseObjectItem = responseObject.Items[0].VolumeInfo;
 
@@ -67,7 +67,7 @@ public partial class GetBookByIsbnAdapter : IGetBookByIsbnPort
         string[] imageUrls = await GetImages(responseObjectItem, result.Isbn);
         result.ImagePath = imageUrls.First();
 
-        return BookResult.Create(result, imageUrls);
+        return BookParserResult.Create(result, imageUrls);
     }
 
     private async Task<string[]> GetImages(GoogleVolumeInfo responseObjectItem, string isbn)

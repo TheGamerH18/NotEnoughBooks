@@ -4,19 +4,16 @@ public class BookResult
 {
     public bool Success { get; set; }
     
-    public string Message { get; set; }
+    public string ErrorMessage { get; set; }
     
     public Book Book { get; set; }
-    
-    public string[] ImageUrls { get; set; }
 
-    public static BookResult Create(Book book, string[] foundImageUrls = null)
+    public static BookResult Create(Book book)
     {
         return new BookResult()
         {
             Success = true,
-            Book = book,
-            ImageUrls = foundImageUrls ?? Array.Empty<string>()
+            Book = book
         };
     }
 
@@ -25,7 +22,7 @@ public class BookResult
         return new BookResult()
         {
             Success = false,
-            Message = message
+            ErrorMessage = message
         };
     }
 }

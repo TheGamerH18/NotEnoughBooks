@@ -6,13 +6,13 @@ using NotEnoughBooks.Core.UseCases.Interfaces;
 namespace NotEnoughBooks.Core.UseCases;
 
 [GenerateFullConstructor]
-public partial class RequestBookUseCase : IRequestBookUseCase
+public partial class RequestNewBookUseCase : IRequestNewBookUseCase
 {
     private readonly IGetBookByIsbnPort _getBookByIsbnPort;
     
-    public async Task<BookResult> Execute(string isbn)
+    public async Task<BookParserResult> Execute(string isbn)
     {
-        BookResult book = await _getBookByIsbnPort.GetBook(isbn);
-        return book;
+        BookParserResult bookParser = await _getBookByIsbnPort.GetBook(isbn);
+        return bookParser;
     }
 }
