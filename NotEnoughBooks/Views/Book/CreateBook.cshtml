@@ -1,0 +1,37 @@
+@model NotEnoughBooks.ViewModels.BookFormViewModel
+
+@{
+    ViewData["Title"] = "GetBookInfo";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>GetBookInfo</h1>
+
+<h4>Book</h4>
+<hr/>
+<div class="row">
+    <div>
+        <form asp-action="SaveBook" enctype="multipart/form-data" method="post">
+            @{
+                await Html.RenderPartialAsync("BookForm", Model);
+            }
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const imagePathInput = $("#Book_ImagePath");
+        
+        function select(url) {
+            imagePathInput.val(url);
+            $("#ImageImg").attr("src", url);
+        }
+        
+        imagePathInput.on("change", function () {
+            const imageUrl = imagePathInput.val();
+            $("#ImageImg").attr("src", imageUrl);
+        })
+    </script>
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

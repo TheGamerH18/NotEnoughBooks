@@ -2,6 +2,7 @@ using ConstructorGenerator.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using NotEnoughBooks.Core.Extensions;
 using NotEnoughBooks.Core.Models;
 using NotEnoughBooks.Core.UseCases.Interfaces;
 using NotEnoughBooks.ViewModels;
@@ -13,14 +14,14 @@ namespace NotEnoughBooks.Controllers;
 public partial class BookController : Controller
 {
     private readonly ILogger<BookController> _logger;
-    private readonly IRequestBookUseCase _requestBookUseCase;
+    private readonly IRequestNewBookUseCase _requestNewBookUseCase;
     private readonly ISaveBookUseCase _saveBookUseCase;
     private readonly IGetBooksByUserUseCase _getBooksByUserUseCase;
     private readonly IGetBookUseCase _getBookUseCase;
     private readonly ISearchUseCase _searchUseCase;
     private readonly IDeleteBookUseCase _deleteBookUseCase;
     private readonly UserManager<IdentityUser> _userManager;
-    
+
     [HttpGet]
     public IActionResult AddBook()
     {
@@ -34,18 +35,18 @@ public partial class BookController : Controller
             return StatusCode(500);
         }
     }
-    
+
     [HttpGet]
-    public async Task<IActionResult> GetBookInfo(string query)
+    public async Task<IActionResult> CreateBook(string query)
     {
         try
         {
-            BookResult result = await _requestBookUseCase.Execute(query);
-            
-            if (result.Success)
-                return View(result.Book);
-            
-            return BadRequest(result.Message);
+            BookParserResult parserResult = await _requestNewBookUseCase.Execute(query);
+            if (!parserResult.Success)
+                return BadRequest(parserResult.ErrorMessage);
+
+            BookFormViewModel bookFormViewModel = BookFormViewModel.Create(parserResult.Book);
+            return View(bookFormViewModel);
         }
         catch (Exception e)
         {
@@ -55,12 +56,17 @@ public partial class BookController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> SaveBook(Book book)
+    public async Task<IActionResult> SaveBook(BookFormViewModel bookFormViewModel)
     {
         try
         {
             IdentityUser requestingUser = await GetRequestingUser();
-            return View(await _saveBookUseCase.Execute(book, requestingUser));
+            string fileExtension = bookFormViewModel.Image?.ContentType.GetFileExtension();
+            
+            if (fileExtension != null)
+                return View(await _saveBookUseCase.Execute(bookFormViewModel.Book, requestingUser, bookFormViewModel.Image.OpenReadStream(), fileExtension));
+            
+            return View(await _saveBookUseCase.Execute(bookFormViewModel.Book, requestingUser));
         }
         catch (Exception e)
         {
@@ -80,8 +86,15 @@ public partial class BookController : Controller
                 IEnumerable<Book> books = _getBooksByUserUseCase.Execute(viewModel.Order, viewModel.OrderAsc, requestingUser);
                 return View(IndexBookViewModel.Create(books, viewModel.Order, viewModel.OrderAsc));
             }
-            IEnumerable<Book> searchResult = _searchUseCase.Execute(viewModel.SearchText, viewModel.Order, viewModel.OrderAsc, requestingUser);
-            return View(IndexBookViewModel.Create(searchResult, viewModel.Order, viewModel.OrderAsc, viewModel.SearchText));
+
+            IEnumerable<Book> searchResult = _searchUseCase.Execute(viewModel.SearchText,
+                                                                    viewModel.Order,
+                                                                    viewModel.OrderAsc,
+                                                                    requestingUser);
+            return View(IndexBookViewModel.Create(searchResult,
+                                                  viewModel.Order,
+                                                  viewModel.OrderAsc,
+                                                  viewModel.SearchText));
         }
         catch (Exception e)
         {
@@ -96,8 +109,10 @@ public partial class BookController : Controller
         try
         {
             IdentityUser requestingUser = await GetRequestingUser();
-            BookResult bookResult = await _getBookUseCase.Execute(id, requestingUser);
-            return View(bookResult);
+            BookResult bookParserResult = await _getBookUseCase.Execute(id, requestingUser);
+
+            EditViewModel editViewModel = EditViewModel.Create(bookParserResult);
+            return View(editViewModel);
         }
         catch (Exception e)
         {
@@ -107,12 +122,19 @@ public partial class BookController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Edit(Book book)
+    public async Task<IActionResult> Edit(BookFormViewModel bookFormViewModel)
     {
         try
         {
             IdentityUser requestingUser = await GetRequestingUser();
-            bool execute = await _saveBookUseCase.Execute(book, requestingUser);
+            
+            string fileExtension = bookFormViewModel.Image?.ContentType.GetFileExtension();
+            bool execute;
+            if (fileExtension != null)
+                execute = await _saveBookUseCase.Execute(bookFormViewModel.Book, requestingUser, bookFormViewModel.Image.OpenReadStream(), fileExtension);
+            else
+                execute = await _saveBookUseCase.Execute(bookFormViewModel.Book, requestingUser);
+            
             if (!execute)
                 return NotFound();
             

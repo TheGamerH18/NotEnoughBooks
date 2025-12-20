@@ -13,48 +13,71 @@ public partial class SaveBookUseCase : ISaveBookUseCase
     private readonly ICacheThumbnailPort _cacheThumbnailPort;
     private readonly IGetBookByIdPort _getBookByIdPort;
 
-    public async Task<bool> Execute(Book newBook, IdentityUser user)
+    public async Task<bool> Execute(Book newBook, IdentityUser user, Stream coverFileStream = null, string fileExtension = null)
     {
         try
         {
             newBook.OwnedBy = user;
             newBook.AddedOn = DateTime.Now;
             // Book is not in DB so fill in the model
-            if (newBook.Id == Guid.Empty)
-            {
-                newBook.Id = Guid.NewGuid();
-                newBook.ImagePath = await _cacheThumbnailPort.SaveThumbnail(newBook.ImagePath, newBook.Id);
-                await _saveBookPort.SaveBook(newBook);
-            }
-            else
+            if (newBook.Id != Guid.Empty)
             {
                 Book oldBook = await _getBookByIdPort.GetBookById(newBook.Id);
                 if (oldBook == null || oldBook.OwnedBy != user)
                     return false;
 
-                // Image changed, delete old one and download new
-                if (newBook.ImagePath != oldBook.ImagePath)
-                {
-                    await _cacheThumbnailPort.DeleteThumbnail(oldBook.ImagePath);
-                    oldBook.ImagePath = await _cacheThumbnailPort.SaveThumbnail(newBook.ImagePath, newBook.Id);
-                }
-                oldBook.Authors = newBook.Authors;
-                oldBook.Description = newBook.Description;
-                oldBook.Isbn = newBook.Isbn;
-                oldBook.PageCount = newBook.PageCount;
-                oldBook.Price = newBook.Price;
-                oldBook.Published = newBook.Published;
-                oldBook.Publisher = newBook.Publisher;
-                oldBook.Subtitle = newBook.Subtitle;
-                oldBook.Title = newBook.Title;
-
-                await _saveBookPort.SaveChanges();
+                await UpdateBook(newBook, oldBook, coverFileStream, fileExtension);
             }
+            else
+                await CreateNewBook(newBook, coverFileStream, fileExtension);
+
             return true;
         }
         catch
         {
             return false;
         }
+    }
+
+    private async Task UpdateBook(Book newBook, Book oldBook, Stream coverFileStream, string fileExtension)
+    {
+        if (coverFileStream != null && fileExtension != null)
+        {
+            await _cacheThumbnailPort.DeleteThumbnail(oldBook.ImagePath);
+            oldBook.ImagePath = await _cacheThumbnailPort.SaveThumbnail(coverFileStream, fileExtension, oldBook.Id);
+        }
+        else if (newBook.ImagePath != oldBook.ImagePath)
+        {
+            await _cacheThumbnailPort.DeleteThumbnail(oldBook.ImagePath);
+            oldBook.ImagePath = await _cacheThumbnailPort.SaveThumbnail(newBook.ImagePath, newBook.Id);
+        }
+
+                
+        oldBook.Authors = newBook.Authors;
+        oldBook.Description = newBook.Description;
+        oldBook.Isbn = newBook.Isbn;
+        oldBook.PageCount = newBook.PageCount;
+        oldBook.Price = newBook.Price;
+        oldBook.Published = newBook.Published;
+        oldBook.Publisher = newBook.Publisher;
+        oldBook.Subtitle = newBook.Subtitle;
+        oldBook.Title = newBook.Title;
+
+        await _saveBookPort.SaveChanges();
+    }
+
+    private async Task CreateNewBook(Book newBook, Stream coverFileStream, string fileExtension)
+    {
+        newBook.Id = Guid.NewGuid();
+        if (coverFileStream != null && fileExtension != null)
+        {
+            await _cacheThumbnailPort.DeleteThumbnail(newBook.ImagePath);
+            newBook.ImagePath = await _cacheThumbnailPort.SaveThumbnail(coverFileStream, fileExtension, newBook.Id);
+        }
+        else if (!string.IsNullOrEmpty(newBook.ImagePath))
+        {
+            newBook.ImagePath = await _cacheThumbnailPort.SaveThumbnail(newBook.ImagePath, newBook.Id);
+        }
+        await _saveBookPort.SaveBook(newBook);
     }
 }

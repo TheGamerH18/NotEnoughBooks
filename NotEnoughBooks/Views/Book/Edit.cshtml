@@ -1,4 +1,4 @@
-@model NotEnoughBooks.Core.Models.BookResult
+@model NotEnoughBooks.ViewModels.EditViewModel
 
 @{
     ViewData["Title"] = "Edit Book";
@@ -12,9 +12,9 @@
 }
 else
 {
-    <form asp-action="Edit" method="post" asp-route-id="">
+    <form asp-action="Edit" method="post" enctype="multipart/form-data" asp-route-id="">
         @{
-            await Html.RenderPartialAsync("BookForm", Model.Book);
+            await Html.RenderPartialAsync("BookForm", Model.BookFormViewModel);
         }
     </form>
     <button class="btn btn-danger mt-2" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>
@@ -33,7 +33,7 @@ else
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <a class="btn btn-danger" asp-action="Delete" asp-route-id="@Model.Book.Id">Delete</a>
+                <a class="btn btn-danger" asp-action="Delete" asp-route-id="@Model.BookFormViewModel.Book.Id">Delete</a>
             </div>
         </div>
     </div>

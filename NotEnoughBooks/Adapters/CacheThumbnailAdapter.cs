@@ -1,4 +1,5 @@
 using ConstructorGenerator.Attributes;
+using NotEnoughBooks.Core.Extensions;
 using NotEnoughBooks.Core.Ports;
 
 namespace NotEnoughBooks.Adapters;
@@ -22,8 +23,10 @@ public partial class CacheThumbnailAdapter : ICacheThumbnailPort
                 return string.Empty;
             }
 
-            if (!TryGetFileExtension(httpResponseMessage, out string extension))
+            string extension = httpResponseMessage.Content.Headers.ContentType?.MediaType.GetFileExtension();
+            if (extension == null)
                 return string.Empty;
+            
             string path = Path.Combine(PathProvider.ThumbnailsFolderPath, bookId + extension);
 
             await using (Stream streamAsync = await httpResponseMessage.Content.ReadAsStreamAsync())
@@ -43,6 +46,25 @@ public partial class CacheThumbnailAdapter : ICacheThumbnailPort
         }
     }
 
+    public async Task<string> SaveThumbnail(Stream imageStream, string fileExtension, Guid bookId)
+    {
+        try
+        {
+            Directory.CreateDirectory(PathProvider.ThumbnailsFolderPath);
+            string path = Path.Combine(PathProvider.ThumbnailsFolderPath, bookId + fileExtension);
+            await using (FileStream fileStream = new FileStream(path, FileMode.OpenOrCreate))
+            {
+                await imageStream.CopyToAsync(fileStream);
+            }
+            return "/thumbnails/" + bookId + fileExtension;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Could not save thumbnail");
+            return string.Empty;
+        }
+    }
+
     public Task DeleteThumbnail(string fileName)
     {
         fileName = fileName.Split("/").Last();
@@ -50,26 +72,5 @@ public partial class CacheThumbnailAdapter : ICacheThumbnailPort
         if (File.Exists(filePath))
             File.Delete(filePath);
         return Task.CompletedTask;
-    }
-
-    private bool TryGetFileExtension(HttpResponseMessage httpResponseMessage, out string extension)
-    {
-        string contentType = httpResponseMessage.Content.Headers.ContentType?.MediaType;
-        switch (contentType)
-        {
-            case "image/jpg":
-            case "image/jpeg":
-                extension = ".jpg";
-                break;
-            case "image/png":
-                extension = ".png";
-                break;
-            default:
-                _logger.LogWarning("Could not determine/Forbidden file extension");
-                extension = string.Empty;
-                return false;
-        }
-
-        return true;
     }
 }

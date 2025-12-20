@@ -1,62 +1,83 @@
-@model NotEnoughBooks.Core.Models.Book
+@model NotEnoughBooks.ViewModels.BookFormViewModel
 
 <div class="d-lg-flex">
     <div class="flex-fill m-3">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <input type="hidden" asp-for="Id"/>
+        <input type="hidden" asp-for="Book.Id"/>
         <div class="form-floating mb-3">
-            <input asp-for="Isbn" class="form-control" readonly/>
-            <label asp-for="Isbn" class="control-label">ISBN</label>
-            <span asp-validation-for="Isbn" class="text-danger"></span>
+            <input asp-for="Book.Isbn" class="form-control"/>
+            <label asp-for="Book.Isbn" class="control-label">ISBN</label>
+            <span asp-validation-for="Book.Isbn" class="text-danger"></span>
         </div>
         <div class="form-floating mb-3">
-            <input asp-for="Title" class="form-control"/>
-            <label asp-for="Title" class="control-label"></label>
-            <span asp-validation-for="Title" class="text-danger"></span>
+            <input asp-for="Book.Title" class="form-control"/>
+            <label asp-for="Book.Title" class="control-label"></label>
+            <span asp-validation-for="Book.Title" class="text-danger"></span>
         </div>
         <div class="form-floating mb-3">
-            <input asp-for="Subtitle" class="form-control"/>
-            <label asp-for="Subtitle" class="control-label"></label>
-            <span asp-validation-for="Subtitle" class="text-danger"></span>
+            <input asp-for="Book.Subtitle" class="form-control"/>
+            <label asp-for="Book.Subtitle" class="control-label"></label>
+            <span asp-validation-for="Book.Subtitle" class="text-danger"></span>
         </div>
         <div class="form-floating mb-3">
-            <input asp-for="Description" class="form-control"/>
-            <label asp-for="Description" class="control-label"></label>
-            <span asp-validation-for="Description" class="text-danger"></span>
+            <input asp-for="Book.Description" class="form-control"/>
+            <label asp-for="Book.Description" class="control-label"></label>
+            <span asp-validation-for="Book.Description" class="text-danger"></span>
         </div>
         <div class="form-floating mb-3">
-            <input asp-for="Authors" class="form-control"/>
-            <label asp-for="Authors" class="control-label"></label>
-            <span asp-validation-for="Authors" class="text-danger"></span>
+            <input asp-for="Book.Authors" class="form-control"/>
+            <label asp-for="Book.Authors" class="control-label"></label>
+            <span asp-validation-for="Book.Authors" class="text-danger"></span>
         </div>
         <div class="form-floating mb-3">
-            <input asp-for="Publisher" class="form-control"/>
-            <label asp-for="Publisher" class="control-label"></label>
-            <span asp-validation-for="Publisher" class="text-danger"></span>
+            <input asp-for="Book.Publisher" class="form-control"/>
+            <label asp-for="Book.Publisher" class="control-label"></label>
+            <span asp-validation-for="Book.Publisher" class="text-danger"></span>
         </div>
         <div class="form-floating mb-3">
-            <input asp-for="Published" type="date" class="form-control"/>
-            <label asp-for="Published" class="control-label">Published</label>
-            <span asp-validation-for="Published" class="text-danger"></span>
+            <input asp-for="Book.Published" type="date" class="form-control"/>
+            <label asp-for="Book.Published" class="control-label">Published</label>
+            <span asp-validation-for="Book.Published" class="text-danger"></span>
         </div>
         <div class="input-group mb-3">
-            <label asp-for="PageCount" class="control-label"></label>
-            <input type="number" data-decimals="0" step="1" asp-for="PageCount" class="form-control"/>
-            <span asp-validation-for="PageCount" class="text-danger"></span>
+            <label asp-for="Book.PageCount" class="control-label"></label>
+            <input type="number" data-decimals="0" step="1" asp-for="Book.PageCount" class="form-control"/>
+            <span asp-validation-for="Book.PageCount" class="text-danger"></span>
         </div>
         <div class="input-group mb-3">
-            <label asp-for="Price" class="control-label"></label>
-            <input type="number" data-decimals="2" step="0.01" asp-for="Price" class="form-control"/>
-            <span asp-validation-for="Price" class="text-danger"></span>
+            <label asp-for="Book.Price" class="control-label"></label>
+            <input type="number" data-decimals="2" step="0.01" asp-for="Book.Price" class="form-control"/>
+            <span asp-validation-for="Book.Price" class="text-danger"></span>
         </div>
-        <div class="form-floating mb-3">
-            <input asp-for="ImagePath" class="form-control"/>
-            <label asp-for="ImagePath" class="control-label">Image Url</label>
-            <span asp-validation-for="ImagePath" class="text-danger"></span>
+        <div class="input-group mb-3">
+            <div class="form-floating">
+                <input asp-for="Book.ImagePath" class="form-control" value="@Model.ImageUrls.FirstOrDefault(Model.Book.ImagePath)"/>
+                <label asp-for="Book.ImagePath" class="control-label">Image Url</label>
+                <span asp-validation-for="Book.ImagePath" class="text-danger"></span>
+            </div>
+
+            @if (Model.ImageUrls.Length != 0)
+            {
+                <button class="dropdown-toggle input-group-text" type="button" data-bs-toggle="dropdown"
+                        aria-expanded="false"></button>
+                <ul class="dropdown-menu">
+                    @foreach (string url in Model.ImageUrls)
+                    {
+                        <li>
+                            <p class="btn w-100 text-start m-0" type="button" onclick="select('@url')">@url</p>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+        <div class="input-group mb-3">
+            <label class="input-group-text" asp-for="Image">Upload Cover</label>
+            <input type="file" class="form-control" asp-for="Image" accept="image/jpeg, image/png, image/webp">
         </div>
     </div>
     <div class="m-3">
-        <img src="@Model.ImagePath" style="max-width: 35rem" alt="Cover" class="rounded w-100"/>
+        <img id="ImageImg" src="@Model.Book.ImagePath" style="max-width: 35rem; min-width: 20rem" alt="Cover"
+             class="rounded w-100"/>
     </div>
 </div>
 <div class="form-floating">
