@@ -1,7 +1,6 @@
 using ConstructorGenerator.Attributes;
 using NotEnoughBooks.Core.Extensions;
 using NotEnoughBooks.Core.Ports;
-using NotEnoughBooks.ViewModels;
 
 namespace NotEnoughBooks.Adapters;
 
