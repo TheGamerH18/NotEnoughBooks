@@ -9,7 +9,7 @@ using NotEnoughBooks.Core.Ports;
 namespace NotEnoughBooks.Parser.DNB;
 
 [GenerateFullConstructor]
-public partial class GetBookByIsbnAdapter : IGetBookByIsbnPort
+public partial class GetBookFromParserAdapter : IGetBookFromParserPort
 {
     private const string DNB_URL = "https://portal.dnb.de/opac.htm?method=simpleSearch&query=";
     private const string GOOGLE_BOOKS_URL = "https://www.googleapis.com/books/v1/volumes?q=isbn:";

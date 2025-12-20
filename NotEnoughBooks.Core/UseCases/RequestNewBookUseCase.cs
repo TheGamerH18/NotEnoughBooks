@@ -8,11 +8,11 @@ namespace NotEnoughBooks.Core.UseCases;
 [GenerateFullConstructor]
 public partial class RequestNewBookUseCase : IRequestNewBookUseCase
 {
-    private readonly IGetBookByIsbnPort _getBookByIsbnPort;
+    private readonly IGetBookFromParserPort _getBookFromParserPort;
     
     public async Task<BookParserResult> Execute(string isbn)
     {
-        BookParserResult bookParser = await _getBookByIsbnPort.GetBook(isbn);
+        BookParserResult bookParser = await _getBookFromParserPort.GetBook(isbn);
         return bookParser;
     }
 }

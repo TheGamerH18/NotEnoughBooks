@@ -2,7 +2,7 @@ using NotEnoughBooks.Core.Models;
 
 namespace NotEnoughBooks.Core.Ports;
 
-public interface IGetBookByIsbnPort
+public interface IGetBookFromParserPort
 {
     public Task<BookParserResult> GetBook(string isbn);
 }
