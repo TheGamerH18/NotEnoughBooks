@@ -163,10 +163,10 @@
             <tbody>
             @foreach (Book book in Model.Books)
             {
-                <tr data-id="@book.Id">
+                <tr data-id="@book.Id" style="cursor: pointer">
                     <td>@book.Title</td>
                     <td>@book.PageCount</td>
-                    <td>@book.Price</td>
+                    <td>@book.Price.ToString("F2")</td>
                     <td>@book.Published</td>
                     <td>@book.AddedOn</td>
                 </tr>
@@ -185,7 +185,7 @@
             });
         });
 
-        $("tr").click(function () {
+        $("tbody tr").click(function () {
             window.location.href = "/Book/Edit/" + $(this).data("id");
         })
 

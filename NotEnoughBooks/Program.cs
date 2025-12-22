@@ -1,4 +1,6 @@
+using System.Globalization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using NotEnoughBooks.Adapters;
@@ -24,6 +26,18 @@ public class Program
                         .AddRoles<IdentityRole>()
                         .AddEntityFrameworkStores<ApplicationDbContext>();
         builder.Services.AddControllersWithViews();
+        builder.Services.Configure<RequestLocalizationOptions>(options =>
+        {
+            CultureInfo[] cultures =
+            [
+                new CultureInfo("en"),
+                new CultureInfo("de")
+            ];
+            options.DefaultRequestCulture = new RequestCulture("en-US");
+            options.SupportedCultures = cultures;
+            options.SupportedUICultures = cultures;
+            options.ApplyCurrentCultureToResponseHeaders = true;
+        });
         
         builder.Services.AddHttpClient();
 
@@ -68,7 +82,7 @@ public class Program
         }
 
         app.UseRouting();
-
+        app.UseRequestLocalization();
         app.UseAuthorization();
 
         app.MapControllerRoute(name: "default", pattern: "{controller=Book}/{action=Index}/{id?}");
