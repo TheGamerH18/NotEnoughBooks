@@ -1,4 +1,5 @@
 @using NotEnoughBooks.Core.Models
+@using NotEnoughBooks.ViewModels
 @model NotEnoughBooks.ViewModels.IndexBookViewModel
 
 @{
@@ -15,41 +16,81 @@
         </div>
     </div>
     <hr/>
-
-    <input hidden asp-for="SearchText"/>
     <input hidden asp-for="OrderAsc"/>
-    
-    <div class="input-group mx-2 mb-2" style="max-width: 20rem">
-        <select auto-submit asp-for="Order" asp-items="Html.GetEnumSelectList<OrderBooksBy>()" class="form-select">
+    <input hidden asp-for="View"/>
 
-        </select>
-        <button class="btn btn-secondary" onclick="sort()">
-            @if (Model.OrderAsc)
-            {
-                <i class="bi bi-sort-down"></i>
-            }
-            else
-            {
-                <i class="bi bi-sort-up"></i>
-            }
-        </button>
-    </div>
-</form>
-
-<div class="d-flex flex-wrap">
-    @foreach (Book book in Model.Books)
+    @if (Model.View == IndexBookViewModel.ViewMode.Grid)
     {
-        <a asp-action="Edit" asp-route-id="@book.Id" class="book-card text-decoration-none m-2" style="">
-            <div class="card">
-                <img src="@book.ImagePath" class="card-img-top img-fluid" style="aspect-ratio: 0.7; object-fit: cover"
-                     alt="Cover"/>
-                <div class="card-body">
-                    <p class="card-text">@book.Title</p>
-                </div>
+        <div class="d-flex w-100 justify-content-between">
+            <div class="input-group mx-2 mb-2 flex-grow-1" style="max-width: 20rem">
+                <select auto-submit asp-for="Order" asp-items="Html.GetEnumSelectList<OrderBooksBy>()"
+                        class="form-select">
+
+                </select>
+                <button class="btn btn-secondary" onclick="sort()">
+                    @if (Model.OrderAsc)
+                    {
+                        <i class="bi bi-sort-down"></i>
+                    }
+                    else
+                    {
+                        <i class="bi bi-sort-up"></i>
+                    }
+                </button>
             </div>
-        </a>
+            <div>
+                <button class="btn @(Model.View == IndexBookViewModel.ViewMode.Grid ? "active" : "")" onclick="setGridView()">
+                    <i class="bi bi-grid"></i>
+                </button>
+                <button class="btn @(Model.View == IndexBookViewModel.ViewMode.List ? "active" : "")" onclick="setListView()">
+                    <i class="bi bi-list"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="d-flex flex-wrap">
+            @foreach (Book book in Model.Books)
+            {
+                <a asp-action="Edit" asp-route-id="@book.Id" class="book-card text-decoration-none m-2" style="">
+                    <div class="card">
+                        <img src="@book.ImagePath" class="card-img-top img-fluid"
+                             style="aspect-ratio: 0.7; object-fit: cover"
+                             alt="Cover"/>
+                        <div class="card-body">
+                            <p class="card-text">@book.Title</p>
+                        </div>
+                    </div>
+                </a>
+            }
+        </div>
     }
-</div>
+    else if (Model.View == IndexBookViewModel.ViewMode.List)
+    {
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Title</th>
+                <th scope="col">Page Count</th>
+                <th scope="col">Price</th>
+                <th scope="col">Published</th>
+                <th scope="col">Added</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (Book book in Model.Books)
+            {
+                <tr>
+                    <td>@book.Title</td>
+                    <td>@book.PageCount</td>
+                    <td>@book.Price</td>
+                    <td>@book.Published</td>
+                    <td>@book.AddedOn</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+</form>
 
 @section Scripts
 {
@@ -64,6 +105,14 @@
             const input = $("#OrderAsc");
             input.prop("checked", !input.prop("checked"));
             input.closest("form").submit();
+        }
+        
+        function setGridView() {
+            $("#View").val("Grid")
+        }
+        
+        function setListView() {
+            $("#View").val("List")
         }
     </script>
 }

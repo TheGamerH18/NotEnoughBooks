@@ -62,10 +62,13 @@ public partial class BookController : Controller
         {
             IdentityUser requestingUser = await GetRequestingUser();
             string fileExtension = bookFormViewModel.Image?.ContentType.GetFileExtension();
-            
+
             if (fileExtension != null)
-                return View(await _saveBookUseCase.Execute(bookFormViewModel.Book, requestingUser, bookFormViewModel.Image.OpenReadStream(), fileExtension));
-            
+                return View(await _saveBookUseCase.Execute(bookFormViewModel.Book,
+                                                           requestingUser,
+                                                           bookFormViewModel.Image.OpenReadStream(),
+                                                           fileExtension));
+
             return View(await _saveBookUseCase.Execute(bookFormViewModel.Book, requestingUser));
         }
         catch (Exception e)
@@ -83,18 +86,17 @@ public partial class BookController : Controller
             IdentityUser requestingUser = await GetRequestingUser();
             if (string.IsNullOrEmpty(viewModel.SearchText))
             {
-                IEnumerable<Book> books = _getBooksByUserUseCase.Execute(viewModel.Order, viewModel.OrderAsc, requestingUser);
-                return View(IndexBookViewModel.Create(books, viewModel.Order, viewModel.OrderAsc));
+                IEnumerable<Book> books = _getBooksByUserUseCase.Execute(viewModel.Order,
+                                                                         viewModel.OrderAsc,
+                                                                         requestingUser);
+                return View(IndexBookViewModel.Create(books, viewModel));
             }
 
             IEnumerable<Book> searchResult = _searchUseCase.Execute(viewModel.SearchText,
                                                                     viewModel.Order,
                                                                     viewModel.OrderAsc,
                                                                     requestingUser);
-            return View(IndexBookViewModel.Create(searchResult,
-                                                  viewModel.Order,
-                                                  viewModel.OrderAsc,
-                                                  viewModel.SearchText));
+            return View(IndexBookViewModel.Create(searchResult, viewModel));
         }
         catch (Exception e)
         {
@@ -127,17 +129,20 @@ public partial class BookController : Controller
         try
         {
             IdentityUser requestingUser = await GetRequestingUser();
-            
+
             string fileExtension = bookFormViewModel.Image?.ContentType.GetFileExtension();
             bool execute;
             if (fileExtension != null)
-                execute = await _saveBookUseCase.Execute(bookFormViewModel.Book, requestingUser, bookFormViewModel.Image.OpenReadStream(), fileExtension);
+                execute = await _saveBookUseCase.Execute(bookFormViewModel.Book,
+                                                         requestingUser,
+                                                         bookFormViewModel.Image.OpenReadStream(),
+                                                         fileExtension);
             else
                 execute = await _saveBookUseCase.Execute(bookFormViewModel.Book, requestingUser);
-            
+
             if (!execute)
                 return NotFound();
-            
+
             return RedirectToAction(nameof(Index));
         }
         catch (Exception e)
