@@ -1,4 +1,5 @@
 @using NotEnoughBooks.Core.Models
+@using NotEnoughBooks.Extensions
 @using NotEnoughBooks.ViewModels
 @model NotEnoughBooks.ViewModels.IndexBookViewModel
 
@@ -39,10 +40,12 @@
                 </button>
             </div>
             <div>
-                <button class="btn @(Model.View == IndexBookViewModel.ViewMode.Grid ? "active" : "")" onclick="setGridView()">
+                <button class="btn @Model.View.IsActive(IndexBookViewModel.ViewMode.Grid)"
+                        onclick="setGridView()">
                     <i class="bi bi-grid"></i>
                 </button>
-                <button class="btn @(Model.View == IndexBookViewModel.ViewMode.List ? "active" : "")" onclick="setListView()">
+                <button class="btn @Model.View.IsActive(IndexBookViewModel.ViewMode.List)"
+                        onclick="setListView()">
                     <i class="bi bi-list"></i>
                 </button>
             </div>
@@ -66,20 +69,101 @@
     }
     else if (Model.View == IndexBookViewModel.ViewMode.List)
     {
-        <table class="table">
+        <div class="d-flex w-100 justify-content-end">
+            <select hidden auto-submit asp-for="Order" asp-items="Html.GetEnumSelectList<OrderBooksBy>()"
+                    class="form-select">
+
+            </select>
+            <div>
+                <button class="btn @Model.View.IsActive(IndexBookViewModel.ViewMode.Grid)"
+                        onclick="setGridView()">
+                    <i class="bi bi-grid"></i>
+                </button>
+                <button class="btn @Model.View.IsActive(IndexBookViewModel.ViewMode.List)"
+                        onclick="setListView()">
+                    <i class="bi bi-list"></i>
+                </button>
+            </div>
+        </div>
+        <table class="table table-hover">
             <thead>
             <tr>
-                <th scope="col">Title</th>
-                <th scope="col">Page Count</th>
-                <th scope="col">Price</th>
-                <th scope="col">Published</th>
-                <th scope="col">Added</th>
+                <th scope="col @Model.Order.IsActive(OrderBooksBy.Title)" onclick="setOrderSelect(4)">
+                    Title
+                    @if (Model.Order == OrderBooksBy.Title)
+                    {
+                        if (Model.OrderAsc)
+                        {
+                            <i class="bi bi-caret-up-fill"></i>
+                        }
+                        else
+                        {
+                            <i class="bi bi-caret-down-fill"></i>
+                        }
+                    }
+                </th>
+                <th scope="col @Model.Order.IsActive(OrderBooksBy.PageCount)" onclick="setOrderSelect(2)">
+                    Page Count
+                    @if (Model.Order == OrderBooksBy.PageCount)
+                    {
+                        if (Model.OrderAsc)
+                        {
+                            <i class="bi bi-caret-up-fill"></i>
+                        }
+                        else
+                        {
+                            <i class="bi bi-caret-down-fill"></i>
+                        }
+                    }
+                </th>
+                <th scope="col @Model.Order.IsActive(OrderBooksBy.Price)" onclick="setOrderSelect(1)">
+                    Price
+                    @if (Model.Order == OrderBooksBy.Price)
+                    {
+                        if (Model.OrderAsc)
+                        {
+                            <i class="bi bi-caret-up-fill"></i>
+                        }
+                        else
+                        {
+                            <i class="bi bi-caret-down-fill"></i>
+                        }
+                    }
+                </th>
+                <th scope="col @Model.Order.IsActive(OrderBooksBy.ReleaseDate)" onclick="setOrderSelect(3)">
+                    Published
+                    @if (Model.Order == OrderBooksBy.ReleaseDate)
+                    {
+                        if (Model.OrderAsc)
+                        {
+                            <i class="bi bi-caret-up-fill"></i>
+                        }
+                        else
+                        {
+                            <i class="bi bi-caret-down-fill"></i>
+                        }
+                    }
+                </th>
+                <th scope="col @Model.Order.IsActive(OrderBooksBy.AddDate)" onclick="setOrderSelect(0)">
+                    Added
+                    @if (Model.Order == OrderBooksBy.AddDate)
+                    {
+                        if (Model.OrderAsc)
+                        {
+                            <i class="bi bi-caret-up-fill"></i>
+                        }
+                        else
+                        {
+                            <i class="bi bi-caret-down-fill"></i>
+                        }
+                    }
+                </th>
             </tr>
             </thead>
             <tbody>
             @foreach (Book book in Model.Books)
             {
-                <tr>
+                <tr data-id="@book.Id">
                     <td>@book.Title</td>
                     <td>@book.PageCount</td>
                     <td>@book.Price</td>
@@ -101,18 +185,33 @@
             });
         });
 
+        $("tr").click(function () {
+            window.location.href = "/Book/Edit/" + $(this).data("id");
+        })
+
         function sort() {
             const input = $("#OrderAsc");
             input.prop("checked", !input.prop("checked"));
             input.closest("form").submit();
         }
-        
+
         function setGridView() {
-            $("#View").val("Grid")
+            $("#View").val("Grid");
         }
-        
+
         function setListView() {
-            $("#View").val("List")
+            $("#View").val("List");
+        }
+
+        function setOrderSelect(v) {
+            const select = $("#Order");
+            console.log(v);
+            console.log(select.val());
+            if (select.val() === v.toString()) {
+                sort();
+            }
+            select.val(v);
+            select.closest("form").submit();
         }
     </script>
 }
