@@ -4,7 +4,7 @@
 
 <form asp-action="CreateBook" method="get">
     <div class="form-floating mb-3">
-        <input name="query" id="query" class="form-control" aria-required="true" />
+        <input name="query" id="query" class="form-control" aria-required="true"/>
         <label for="query" class="form-label">Query</label>
     </div>
     <div>
@@ -12,12 +12,15 @@
     </div>
 </form>
 
-<button class="mt-2 btn btn-lg btn-secondary" onclick="OpenBinaryEye()">Open BinaryEye</button>
+<div class="d-flex mt-2">
+    <button class="me-2 btn btn-lg btn-secondary" onclick="OpenBinaryEye()">Open BinaryEye</button>
+    <a class="btn btn-lg btn-secondary" asp-action="CreateBook">Empty Book</a>
+</div>
 
 @section Scripts
 {
     <script>
-        function OpenBinaryEye(){
+        function OpenBinaryEye() {
             window.open("binaryeye://scan?ret=@Context.Request.Scheme://@Context.Request.Host/Book/GetBookInfo?query={RESULT}")
         }
     </script>

@@ -41,6 +41,9 @@ public partial class BookController : Controller
     {
         try
         {
+            if (string.IsNullOrEmpty(query))
+                return View(BookFormViewModel.Create(new Book()));
+            
             BookParserResult parserResult = await _requestNewBookUseCase.Execute(query);
             if (!parserResult.Success)
                 return BadRequest(parserResult.ErrorMessage);
