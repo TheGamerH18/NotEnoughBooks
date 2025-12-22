@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net.Http.Json;
 using System.Net.Mime;
 using System.Text.RegularExpressions;
@@ -157,7 +158,7 @@ public partial class GetBookFromParserAdapter : IGetBookFromParserPort
             MatchCollection priceMatches = PriceRegex().Matches(secondCell.InnerText.Trim());
             string dePrice =
                 priceMatches.FirstOrDefault(match => match.Value.Split(' ')[1] == "(DE)")?.Value.Split(' ')[0] ?? "0";
-            return double.Parse(dePrice);
+            return double.Parse(dePrice, CultureInfo.InvariantCulture);
         }
 
         return 0;

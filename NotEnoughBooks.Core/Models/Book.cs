@@ -25,7 +25,7 @@ public class Book
     
     public double Price { get; set; }
     
-    public DateOnly Published { get; set; }
+    public DateOnly Published { get; set; } = DateOnly.FromDateTime(DateTime.Now);
 
     public DateTime AddedOn { get; set; } = DateTime.Now;
     
