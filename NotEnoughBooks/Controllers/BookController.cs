@@ -62,10 +62,13 @@ public partial class BookController : Controller
         {
             IdentityUser requestingUser = await GetRequestingUser();
             string fileExtension = bookFormViewModel.Image?.ContentType.GetFileExtension();
-            
+
             if (fileExtension != null)
-                return View(await _saveBookUseCase.Execute(bookFormViewModel.Book, requestingUser, bookFormViewModel.Image.OpenReadStream(), fileExtension));
-            
+                return View(await _saveBookUseCase.Execute(bookFormViewModel.Book,
+                                                           requestingUser,
+                                                           bookFormViewModel.Image.OpenReadStream(),
+                                                           fileExtension));
+
             return View(await _saveBookUseCase.Execute(bookFormViewModel.Book, requestingUser));
         }
         catch (Exception e)
@@ -81,20 +84,27 @@ public partial class BookController : Controller
         try
         {
             IdentityUser requestingUser = await GetRequestingUser();
+            IEnumerable<Book> books;
             if (string.IsNullOrEmpty(viewModel.SearchText))
             {
-                IEnumerable<Book> books = _getBooksByUserUseCase.Execute(viewModel.Order, viewModel.OrderAsc, requestingUser);
-                return View(IndexBookViewModel.Create(books, viewModel.Order, viewModel.OrderAsc));
+                books = _getBooksByUserUseCase.Execute(viewModel.Order,
+                                                       viewModel.OrderAsc,
+                                                       requestingUser).ToArray();
+            }
+            else
+            {
+                books = _searchUseCase.Execute(viewModel.SearchText,
+                                               viewModel.Order,
+                                               viewModel.OrderAsc,
+                                               requestingUser).ToArray();
             }
 
-            IEnumerable<Book> searchResult = _searchUseCase.Execute(viewModel.SearchText,
-                                                                    viewModel.Order,
-                                                                    viewModel.OrderAsc,
-                                                                    requestingUser);
-            return View(IndexBookViewModel.Create(searchResult,
-                                                  viewModel.Order,
-                                                  viewModel.OrderAsc,
-                                                  viewModel.SearchText));
+            int pageAmount = (int)Math.Ceiling((decimal)books.Count() / 30);
+            if (viewModel.View != IndexBookViewModel.ViewMode.Grid)
+                return View(IndexBookViewModel.Create(books, 0, viewModel));
+
+            books = books.Skip((viewModel.Page - 1) * 30).Take(30);
+            return View(IndexBookViewModel.Create(books, pageAmount, viewModel));
         }
         catch (Exception e)
         {
@@ -127,17 +137,20 @@ public partial class BookController : Controller
         try
         {
             IdentityUser requestingUser = await GetRequestingUser();
-            
+
             string fileExtension = bookFormViewModel.Image?.ContentType.GetFileExtension();
             bool execute;
             if (fileExtension != null)
-                execute = await _saveBookUseCase.Execute(bookFormViewModel.Book, requestingUser, bookFormViewModel.Image.OpenReadStream(), fileExtension);
+                execute = await _saveBookUseCase.Execute(bookFormViewModel.Book,
+                                                         requestingUser,
+                                                         bookFormViewModel.Image.OpenReadStream(),
+                                                         fileExtension);
             else
                 execute = await _saveBookUseCase.Execute(bookFormViewModel.Book, requestingUser);
-            
+
             if (!execute)
                 return NotFound();
-            
+
             return RedirectToAction(nameof(Index));
         }
         catch (Exception e)

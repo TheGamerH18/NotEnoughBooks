@@ -4,7 +4,7 @@
 // Write your JavaScript code.
 import {InputSpinner} from "/js/InputSpinner.js"
 
-const inputSpinnerElements = document.querySelectorAll("input[type='number']")
+const inputSpinnerElements = document.querySelectorAll("input[type='number']:not([hidden])")
 for (const inputSpinnerElement of inputSpinnerElements) {
     new InputSpinner(inputSpinnerElement)
 }

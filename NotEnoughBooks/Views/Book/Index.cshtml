@@ -1,4 +1,6 @@
 @using NotEnoughBooks.Core.Models
+@using NotEnoughBooks.Extensions
+@using NotEnoughBooks.ViewModels
 @model NotEnoughBooks.ViewModels.IndexBookViewModel
 
 @{
@@ -15,55 +17,284 @@
         </div>
     </div>
     <hr/>
-
-    <input hidden asp-for="SearchText"/>
     <input hidden asp-for="OrderAsc"/>
-    
-    <div class="input-group mx-2 mb-2" style="max-width: 20rem">
-        <select auto-submit asp-for="Order" asp-items="Html.GetEnumSelectList<OrderBooksBy>()" class="form-select">
+    <input hidden asp-for="View"/>
+    <input hidden type="text" asp-for="Page"/>
+    <input hidden type="text" asp-for="PageAmount"/>
 
-        </select>
-        <button class="btn btn-secondary" onclick="sort()">
-            @if (Model.OrderAsc)
-            {
-                <i class="bi bi-sort-down"></i>
-            }
-            else
-            {
-                <i class="bi bi-sort-up"></i>
-            }
-        </button>
-    </div>
-</form>
-
-<div class="d-flex flex-wrap">
-    @foreach (Book book in Model.Books)
+    @if (Model.View == IndexBookViewModel.ViewMode.Grid)
     {
-        <a asp-action="Edit" asp-route-id="@book.Id" class="book-card text-decoration-none m-2" style="">
-            <div class="card">
-                <img src="@book.ImagePath" class="card-img-top img-fluid" style="aspect-ratio: 0.7; object-fit: cover"
-                     alt="Cover"/>
-                <div class="card-body">
-                    <p class="card-text">@book.Title</p>
-                </div>
+        <div class="d-flex w-100 justify-content-between">
+            <div class="input-group mx-2 mb-2 flex-grow-1" style="max-width: 20rem">
+                <select auto-submit asp-for="Order" asp-items="Html.GetEnumSelectList<OrderBooksBy>()"
+                        class="form-select">
+
+                </select>
+                <button class="btn btn-secondary" onclick="sort()">
+                    @if (Model.OrderAsc)
+                    {
+                        <i class="bi bi-sort-down"></i>
+                    }
+                    else
+                    {
+                        <i class="bi bi-sort-up"></i>
+                    }
+                </button>
             </div>
-        </a>
+            <div>
+                <button class="btn @Model.View.IsActive(IndexBookViewModel.ViewMode.Grid)"
+                        onclick="setGridView()">
+                    <i class="bi bi-grid"></i>
+                </button>
+                <button class="btn @Model.View.IsActive(IndexBookViewModel.ViewMode.List)"
+                        onclick="setListView()">
+                    <i class="bi bi-list"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="d-flex flex-wrap">
+            @foreach (Book book in Model.Books)
+            {
+                <a asp-action="Edit" asp-route-id="@book.Id" class="book-card text-decoration-none m-2" style="">
+                    <div class="card">
+                        <img src="@book.ImagePath" class="card-img-top img-fluid"
+                             style="aspect-ratio: 0.7; object-fit: cover"
+                             alt="Cover"/>
+                        <div class="card-body">
+                            <p class="card-text">@book.Title</p>
+                        </div>
+                    </div>
+                </a>
+            }
+        </div>
+        @if (Model.PageAmount > 1)
+        {
+            <nav class="d-flex justify-content-center mt-3">
+                <ul class="pagination">
+                    <li class="page-item @(Model.Page <= 1 ? "disabled" : string.Empty)">
+                        <button class="page-link" onclick="goToPage(@Model.Page-1)">Previous</button>
+                    </li>
+                    @if (Model.PageAmount < 5)
+                    {
+                        for (int i = 0; i < Model.PageAmount; i++)
+                        {
+                            <li class="page-item">
+                                <button class="page-link" onclick="goToPage(@i)">@i</button>
+                            </li>
+                        }
+                    }
+                    else if (Model.PageAmount > 5)
+                    {
+                        if (Model.Page > 3)
+                        {
+                            <li class="page-item">
+                                <button class="page-link">...</button>
+                            </li>
+                        }
+
+                        int upper = Model.Page + 1;
+                        int lower = Model.Page - 1;
+                        if (Model.Page <= 3)
+                        {
+                            upper = 4;
+                            lower = 1;
+                        }
+                        else if (Model.Page >= Model.PageAmount - 2)
+                        {
+                            lower = Model.PageAmount - 3;
+                            upper = Model.PageAmount;
+                        }
+
+                        for (int i = lower; i <= upper; i++)
+                        {
+                            <li class="page-item">
+                                <button class="page-link @(Model.Page == i ? "active" : string.Empty)"
+                                        onclick="goToPage(@i)">@i</button>
+                            </li>
+                        }
+
+                        if (Model.Page < Model.PageAmount - 2)
+                        {
+                            <li class="page-item">
+                                <button class="page-link">...</button>
+                            </li>
+                        }
+                    }
+
+                    <li class="page-item @(Model.Page >= Model.PageAmount ? "disabled" : string.Empty)">
+                        <button class="page-link" onclick="goToPage(@Model.Page+1)">Next</button>
+                    </li>
+                </ul>
+            </nav>
+        }
     }
-</div>
+    else if (Model.View == IndexBookViewModel.ViewMode.List)
+    {
+        <div class="d-flex w-100 justify-content-end">
+            <select hidden auto-submit asp-for="Order" asp-items="Html.GetEnumSelectList<OrderBooksBy>()"
+                    class="form-select">
+
+            </select>
+            <div>
+                <button class="btn @Model.View.IsActive(IndexBookViewModel.ViewMode.Grid)"
+                        onclick="setGridView()">
+                    <i class="bi bi-grid"></i>
+                </button>
+                <button class="btn @Model.View.IsActive(IndexBookViewModel.ViewMode.List)"
+                        onclick="setListView()">
+                    <i class="bi bi-list"></i>
+                </button>
+            </div>
+        </div>
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th scope="col @Model.Order.IsActive(OrderBooksBy.Title)" onclick="setOrderSelect(4)">
+                    Title
+                    @if (Model.Order == OrderBooksBy.Title)
+                    {
+                        if (Model.OrderAsc)
+                        {
+                            <i class="bi bi-caret-up-fill"></i>
+                        }
+                        else
+                        {
+                            <i class="bi bi-caret-down-fill"></i>
+                        }
+                    }
+                </th>
+                <th scope="col @Model.Order.IsActive(OrderBooksBy.PageCount)" onclick="setOrderSelect(2)">
+                    Page Count
+                    @if (Model.Order == OrderBooksBy.PageCount)
+                    {
+                        if (Model.OrderAsc)
+                        {
+                            <i class="bi bi-caret-up-fill"></i>
+                        }
+                        else
+                        {
+                            <i class="bi bi-caret-down-fill"></i>
+                        }
+                    }
+                </th>
+                <th scope="col @Model.Order.IsActive(OrderBooksBy.Price)" onclick="setOrderSelect(1)">
+                    Price
+                    @if (Model.Order == OrderBooksBy.Price)
+                    {
+                        if (Model.OrderAsc)
+                        {
+                            <i class="bi bi-caret-up-fill"></i>
+                        }
+                        else
+                        {
+                            <i class="bi bi-caret-down-fill"></i>
+                        }
+                    }
+                </th>
+                <th scope="col @Model.Order.IsActive(OrderBooksBy.ReleaseDate)" onclick="setOrderSelect(3)">
+                    Published
+                    @if (Model.Order == OrderBooksBy.ReleaseDate)
+                    {
+                        if (Model.OrderAsc)
+                        {
+                            <i class="bi bi-caret-up-fill"></i>
+                        }
+                        else
+                        {
+                            <i class="bi bi-caret-down-fill"></i>
+                        }
+                    }
+                </th>
+                <th scope="col @Model.Order.IsActive(OrderBooksBy.AddDate)" onclick="setOrderSelect(0)">
+                    Added
+                    @if (Model.Order == OrderBooksBy.AddDate)
+                    {
+                        if (Model.OrderAsc)
+                        {
+                            <i class="bi bi-caret-up-fill"></i>
+                        }
+                        else
+                        {
+                            <i class="bi bi-caret-down-fill"></i>
+                        }
+                    }
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (Book book in Model.Books)
+            {
+                <tr data-id="@book.Id" style="cursor: pointer">
+                    <td>@book.Title</td>
+                    <td>@book.PageCount</td>
+                    <td>@book.Price.ToString("F2")</td>
+                    <td>@book.Published</td>
+                    <td>@book.AddedOn</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+</form>
 
 @section Scripts
 {
     <script>
+        const pageInput = $("#Page");
+        function resetPage() {
+            pageInput.val(1)
+        }
+        
+        $("#queryInput").on("keydown", function (event) {
+            if (event.key === "Enter") {
+                resetPage();
+            }
+        });
+        
         $(function () {
             $("select[auto-submit]").change(function () {
+                resetPage();
                 $(this).closest("form").submit();
             });
+        });
+
+        $("tbody tr").click(function () {
+            window.location.href = "/Book/Edit/" + $(this).data("id");
         });
 
         function sort() {
             const input = $("#OrderAsc");
             input.prop("checked", !input.prop("checked"));
+            resetPage();
             input.closest("form").submit();
+        }
+
+        function setGridView() {
+            resetPage();
+            $("#View").val("Grid");
+        }
+
+        function setListView() {
+            resetPage();
+            $("#View").val("List");
+        }
+
+        function setOrderSelect(v) {
+            const select = $("#Order");
+            console.log(v);
+            console.log(select.val());
+            if (select.val() === v.toString()) {
+                sort();
+            }
+            select.val(v);
+            resetPage();
+            select.closest("form").submit();
+        }
+
+        function goToPage(number) {
+            pageInput.val(number);
+            pageInput.closest("form").submit();
         }
     </script>
 }
