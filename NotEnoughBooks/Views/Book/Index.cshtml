@@ -19,6 +19,8 @@
     <hr/>
     <input hidden asp-for="OrderAsc"/>
     <input hidden asp-for="View"/>
+    <input hidden type="text" asp-for="Page"/>
+    <input hidden type="text" asp-for="PageAmount"/>
 
     @if (Model.View == IndexBookViewModel.ViewMode.Grid)
     {
@@ -66,6 +68,66 @@
                 </a>
             }
         </div>
+        @if (Model.PageAmount > 1)
+        {
+            <nav class="d-flex justify-content-center mt-3">
+                <ul class="pagination">
+                    <li class="page-item @(Model.Page <= 1 ? "disabled" : string.Empty)">
+                        <button class="page-link" onclick="goToPage(@Model.Page-1)">Previous</button>
+                    </li>
+                    @if (Model.PageAmount < 5)
+                    {
+                        for (int i = 0; i < Model.PageAmount; i++)
+                        {
+                            <li class="page-item">
+                                <button class="page-link" onclick="goToPage(@i)">@i</button>
+                            </li>
+                        }
+                    }
+                    else if (Model.PageAmount > 5)
+                    {
+                        if (Model.Page > 3)
+                        {
+                            <li class="page-item">
+                                <button class="page-link">...</button>
+                            </li>
+                        }
+
+                        int upper = Model.Page + 1;
+                        int lower = Model.Page - 1;
+                        if (Model.Page <= 3)
+                        {
+                            upper = 4;
+                            lower = 1;
+                        }
+                        else if (Model.Page >= Model.PageAmount - 2)
+                        {
+                            lower = Model.PageAmount - 3;
+                            upper = Model.PageAmount;
+                        }
+
+                        for (int i = lower; i <= upper; i++)
+                        {
+                            <li class="page-item">
+                                <button class="page-link @(Model.Page == i ? "active" : string.Empty)"
+                                        onclick="goToPage(@i)">@i</button>
+                            </li>
+                        }
+
+                        if (Model.Page < Model.PageAmount - 2)
+                        {
+                            <li class="page-item">
+                                <button class="page-link">...</button>
+                            </li>
+                        }
+                    }
+
+                    <li class="page-item @(Model.Page >= Model.PageAmount ? "disabled" : string.Empty)">
+                        <button class="page-link" onclick="goToPage(@Model.Page+1)">Next</button>
+                    </li>
+                </ul>
+            </nav>
+        }
     }
     else if (Model.View == IndexBookViewModel.ViewMode.List)
     {
@@ -179,27 +241,42 @@
 @section Scripts
 {
     <script>
+        const pageInput = $("#Page");
+        function resetPage() {
+            pageInput.val(1)
+        }
+        
+        $("#queryInput").on("keydown", function (event) {
+            if (event.key === "Enter") {
+                resetPage();
+            }
+        });
+        
         $(function () {
             $("select[auto-submit]").change(function () {
+                resetPage();
                 $(this).closest("form").submit();
             });
         });
 
         $("tbody tr").click(function () {
             window.location.href = "/Book/Edit/" + $(this).data("id");
-        })
+        });
 
         function sort() {
             const input = $("#OrderAsc");
             input.prop("checked", !input.prop("checked"));
+            resetPage();
             input.closest("form").submit();
         }
 
         function setGridView() {
+            resetPage();
             $("#View").val("Grid");
         }
 
         function setListView() {
+            resetPage();
             $("#View").val("List");
         }
 
@@ -211,7 +288,13 @@
                 sort();
             }
             select.val(v);
+            resetPage();
             select.closest("form").submit();
+        }
+
+        function goToPage(number) {
+            pageInput.val(number);
+            pageInput.closest("form").submit();
         }
     </script>
 }
