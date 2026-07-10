@@ -31,7 +31,6 @@
 
     <ItemGroup>
       <Folder Include="AppData\" />
-      <Folder Include="Data\Migrations\" />
     </ItemGroup>
 
 </Project>

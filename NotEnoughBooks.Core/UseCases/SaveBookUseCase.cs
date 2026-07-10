@@ -1,5 +1,6 @@
 using ConstructorGenerator.Attributes;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using NotEnoughBooks.Core.Models;
 using NotEnoughBooks.Core.Ports;
 using NotEnoughBooks.Core.UseCases.Interfaces;
@@ -12,17 +13,17 @@ public partial class SaveBookUseCase : ISaveBookUseCase
     private readonly ISaveBookPort _saveBookPort;
     private readonly ICacheThumbnailPort _cacheThumbnailPort;
     private readonly IGetBookByIdPort _getBookByIdPort;
+    private readonly ILogger<SaveBookUseCase> _logger;
 
-    public async Task<bool> Execute(Book newBook, IdentityUser user, Stream coverFileStream = null, string fileExtension = null)
+    public async Task<bool> Execute(Book newBook, IdentityUser user, Stream? coverFileStream = null, string? fileExtension = null)
     {
         try
         {
             newBook.OwnedBy = user;
             newBook.AddedOn = DateTime.Now;
-            // Book is not in DB so fill in the model
             if (newBook.Id != Guid.Empty)
             {
-                Book oldBook = await _getBookByIdPort.GetBookById(newBook.Id);
+                Book? oldBook = await _getBookByIdPort.GetBookById(newBook.Id);
                 if (oldBook == null || oldBook.OwnedBy != user)
                     return false;
 
@@ -33,13 +34,14 @@ public partial class SaveBookUseCase : ISaveBookUseCase
 
             return true;
         }
-        catch
+        catch (Exception ex)
         {
+            _logger.LogError(ex, "An error occured while saving book {bookId} for user {userId}", newBook.Id, user.Id);
             return false;
         }
     }
 
-    private async Task UpdateBook(Book newBook, Book oldBook, Stream coverFileStream, string fileExtension)
+    private async Task UpdateBook(Book newBook, Book oldBook, Stream? coverFileStream, string? fileExtension)
     {
         if (coverFileStream != null && fileExtension != null)
         {
@@ -51,8 +53,7 @@ public partial class SaveBookUseCase : ISaveBookUseCase
             await _cacheThumbnailPort.DeleteThumbnail(oldBook.ImagePath);
             oldBook.ImagePath = await _cacheThumbnailPort.SaveThumbnail(newBook.ImagePath, newBook.Id);
         }
-
-                
+        
         oldBook.Authors = newBook.Authors;
         oldBook.Description = newBook.Description;
         oldBook.Isbn = newBook.Isbn;
@@ -60,13 +61,14 @@ public partial class SaveBookUseCase : ISaveBookUseCase
         oldBook.Price = newBook.Price;
         oldBook.Published = newBook.Published;
         oldBook.Publisher = newBook.Publisher;
+        oldBook.ReadingStatus = newBook.ReadingStatus;
         oldBook.Subtitle = newBook.Subtitle;
         oldBook.Title = newBook.Title;
 
         await _saveBookPort.SaveChanges();
     }
 
-    private async Task CreateNewBook(Book newBook, Stream coverFileStream, string fileExtension)
+    private async Task CreateNewBook(Book newBook, Stream? coverFileStream, string? fileExtension)
     {
         newBook.Id = Guid.NewGuid();
         if (coverFileStream != null && fileExtension != null)

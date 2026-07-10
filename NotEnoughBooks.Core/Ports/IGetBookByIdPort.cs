@@ -4,5 +4,5 @@ namespace NotEnoughBooks.Core.Ports;
 
 public interface IGetBookByIdPort
 {
-    public Task<Book> GetBookById(Guid bookId);
+    public Task<Book?> GetBookById(Guid bookId);
 }

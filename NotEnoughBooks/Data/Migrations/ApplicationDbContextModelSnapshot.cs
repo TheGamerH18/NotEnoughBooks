@@ -251,6 +251,9 @@ namespace NotEnoughBooks.Data.Migrations
                     b.Property<string>("Publisher")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("ReadingStatus")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Subtitle")
                         .HasColumnType("TEXT");
 

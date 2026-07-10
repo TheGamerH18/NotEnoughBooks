@@ -1,5 +1,6 @@
 namespace NotEnoughBooks.Core.Models;
 
+#nullable disable
 public class BookResult
 {
     public bool Success { get; set; }

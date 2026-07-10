@@ -1,12 +1,13 @@
 namespace NotEnoughBooks.Core.Models;
 
+#nullable disable
 public class BookParserResult
 {
-    public bool Success { get; set; }
+    public bool Success { get; private init; }
 
-    public string ErrorMessage { get; set; }
+    public string ErrorMessage { get; private init; }
 
-    public Book Book { get; set; }
+    public Book Book { get; private init; }
 
     public string[] ImageUrls { get; set; }
 
